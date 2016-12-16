@@ -23,6 +23,7 @@ class GLOBJECTS_API File : public globjects::AbstractStringSource
 {
 public:
     File(const std::string & filePath, bool binary = true);
+    virtual ~File();
 
     virtual std::string string() const override;
     virtual std::string shortInfo() const override;
@@ -38,8 +39,6 @@ protected:
     bool m_binary;
     mutable std::string m_source;
     mutable bool m_valid;
-
-    virtual ~File();
 
     void loadFileContent() const;
 };

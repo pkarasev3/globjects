@@ -17,25 +17,25 @@ namespace globjects
 
 
 Query::Query()
-: Object(new QueryResource)
+: Object(std::unique_ptr<IDResource>(new QueryResource))
 {
 }
 
-Query::Query(IDResource * resource)
-: Object(resource)
+Query::Query(std::unique_ptr<IDResource> && resource)
+: Object(std::move(resource))
 {
 }
 
-Query * Query::fromId(const GLuint id)
+std::shared_ptr<Query> Query::fromId(const GLuint id)
 {
-    return new Query(new ExternalResource(id));
+    return std::shared_ptr<Query>(new Query(std::unique_ptr<IDResource>(new ExternalResource(id))));
 }
 
 Query::~Query()
 {
 }
 
-Query * Query::current(const GLenum target)
+std::shared_ptr<Query> Query::current(const GLenum target)
 {
     GLint id = get(target, GL_CURRENT_QUERY);
 
@@ -48,9 +48,9 @@ Query * Query::current(const GLenum target)
     return Query::fromId(id);
 }
 
-Query * Query::timestamp()
+std::shared_ptr<Query> Query::timestamp()
 {
-    Query * query = new Query();
+    std::shared_ptr<Query> query = std::shared_ptr<Query>(new Query());
     query->counter(GL_TIMESTAMP);
 
     return query;
@@ -59,15 +59,6 @@ Query * Query::timestamp()
 int Query::getCounterBits(const GLenum target)
 {	
     return get(target, GL_QUERY_COUNTER_BITS);
-}
-
-GLuint Query::genQuery()
-{
-	GLuint id;
-
-    glGenQueries(1, &id);
-
-	return id;
 }
 
 GLint Query::get(const GLenum target, const GLenum pname)

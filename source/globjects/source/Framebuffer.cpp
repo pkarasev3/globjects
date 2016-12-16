@@ -2,6 +2,7 @@
 #include <globjects/Framebuffer.h>
 
 #include <cassert>
+#include <sstream>
 
 #include <glbinding/gl/functions.h>
 #include <glbinding/gl/enum.h>
@@ -48,21 +49,21 @@ void Framebuffer::hintBindlessImplementation(const BindlessImplementation impl)
 }
 
 Framebuffer::Framebuffer()
-: Object(new FrameBufferObjectResource)
+    : Object(std::unique_ptr<IDResource>(new FrameBufferObjectResource))
 {
 }
 
-Framebuffer::Framebuffer(IDResource * resource)
-: Object(resource)
+Framebuffer::Framebuffer(std::unique_ptr<IDResource> && resource)
+: Object(std::move(resource))
 {
 }
 
-Framebuffer * Framebuffer::fromId(const GLuint id)
+std::shared_ptr<Framebuffer> Framebuffer::fromId(const GLuint id)
 {
-    return new Framebuffer(new ExternalResource(id));
+    return std::shared_ptr<Framebuffer>(new Framebuffer(std::unique_ptr<IDResource>(new ExternalResource(id))));
 }
 
-Framebuffer * Framebuffer::defaultFBO()
+std::shared_ptr<Framebuffer> Framebuffer::defaultFBO()
 {
     return ObjectRegistry::current().defaultFBO();
 }
@@ -106,25 +107,25 @@ GLint Framebuffer::getAttachmentParameter(const GLenum attachment, const GLenum 
     return implementation().getAttachmentParameter(this, attachment, pname);
 }
 
-void Framebuffer::attachTexture(const GLenum attachment, Texture * texture, const GLint level)
+void Framebuffer::attachTexture(const GLenum attachment, std::shared_ptr<Texture> texture, const GLint level)
 {
-    implementation().attachTexture(this, attachment, texture, level);
+    implementation().attachTexture(this, attachment, texture.get(), level);
 
-    addAttachment(new AttachedTexture(this, attachment, texture, level));
+    addAttachment(std::unique_ptr<FramebufferAttachment>(new AttachedTexture(shared_from_this(), attachment, texture, level)));
 }
 
-void Framebuffer::attachTextureLayer(const GLenum attachment, Texture * texture, const GLint level, const GLint layer)
+void Framebuffer::attachTextureLayer(const GLenum attachment, std::shared_ptr<Texture> texture, const GLint level, const GLint layer)
 {
-    implementation().attachTextureLayer(this, attachment, texture, level, layer);
+    implementation().attachTextureLayer(this, attachment, texture.get(), level, layer);
 
-    addAttachment(new AttachedTexture(this, attachment, texture, level, layer));
+    addAttachment(std::unique_ptr<FramebufferAttachment>(new AttachedTexture(shared_from_this(), attachment, texture, level, layer)));
 }
 
-void Framebuffer::attachRenderBuffer(const GLenum attachment, Renderbuffer * renderBuffer)
+void Framebuffer::attachRenderBuffer(const GLenum attachment, std::shared_ptr<Renderbuffer> renderBuffer)
 {
-    implementation().attachRenderBuffer(this, attachment, renderBuffer);
+    implementation().attachRenderBuffer(this, attachment, renderBuffer.get());
 
-    addAttachment(new AttachedRenderbuffer(this, attachment, renderBuffer));
+    addAttachment(std::unique_ptr<FramebufferAttachment>(new AttachedRenderbuffer(shared_from_this(), attachment, renderBuffer)));
 }
 
 bool Framebuffer::detach(const GLenum attachment)
@@ -363,16 +364,16 @@ void Framebuffer::printStatus(bool onlyErrors) const
 	}
 }
 
-void Framebuffer::addAttachment(FramebufferAttachment * attachment)
+void Framebuffer::addAttachment(std::unique_ptr<FramebufferAttachment> && attachment)
 {
     assert(attachment != nullptr);
 
-    m_attachments[attachment->attachment()] = attachment;
+    m_attachments[attachment->attachment()] = std::move(attachment);
 }
 
 FramebufferAttachment * Framebuffer::getAttachment(GLenum attachment)
 {
-	return m_attachments[attachment];
+    return m_attachments[attachment].get();
 }
 
 std::vector<FramebufferAttachment*> Framebuffer::attachments()
@@ -380,9 +381,9 @@ std::vector<FramebufferAttachment*> Framebuffer::attachments()
 	std::vector<FramebufferAttachment*> attachments;
     attachments.reserve(m_attachments.size());
 
-    for (std::pair<GLenum, ref_ptr<FramebufferAttachment>> pair: m_attachments)
+    for (const auto & pair: m_attachments)
 	{
-		attachments.push_back(pair.second);
+        attachments.push_back(pair.second.get());
 	}
 
 	return attachments;

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <globjects/base/Referenced.h>
-#include <globjects/base/ref_ptr.h>
+#include <memory>
+
 
 namespace globjects
 {
@@ -15,14 +15,14 @@ class Shader;
 }
 
 
-class ScreenAlignedQuad : public globjects::Referenced
+class ScreenAlignedQuad
 {
 public:
-    ScreenAlignedQuad(globjects::Shader * fragmentShader, globjects::Texture * texture);
+    ScreenAlignedQuad(std::shared_ptr<globjects::Shader> fragmentShader, std::shared_ptr<globjects::Texture> texture);
 
-    ScreenAlignedQuad(globjects::Texture * texture);
-    ScreenAlignedQuad(globjects::Shader  * fragmentShader);
-    ScreenAlignedQuad(globjects::Program * program);
+    ScreenAlignedQuad(std::shared_ptr<globjects::Texture> texture);
+    ScreenAlignedQuad(std::shared_ptr<globjects::Shader> fragmentShader);
+    ScreenAlignedQuad(std::shared_ptr<globjects::Program> program);
 
 	void draw();
 
@@ -31,7 +31,7 @@ public:
     globjects::Shader * vertexShader();
     globjects::Shader * fragmentShader();
 
-    void setTexture(globjects::Texture * texture);
+    void setTexture(std::shared_ptr<globjects::Texture> texture);
 
 	void setSamplerUniform(int index);
 
@@ -39,19 +39,19 @@ protected:
     void initialize();
 
 protected:
-    globjects::ref_ptr<globjects::VertexArray> m_vao;
+    std::shared_ptr<globjects::VertexArray> m_vao;
 
-    globjects::ref_ptr<globjects::Buffer> m_buffer;
+    std::shared_ptr<globjects::Buffer> m_buffer;
 
-    globjects::ref_ptr<globjects::Shader> m_vertexShader;
-    globjects::ref_ptr<globjects::Shader> m_fragmentShader;
+    std::shared_ptr<globjects::Shader> m_vertexShader;
+    std::shared_ptr<globjects::Shader> m_fragmentShader;
 
-    globjects::ref_ptr<globjects::Program> m_program;
-    globjects::ref_ptr<globjects::Texture> m_texture;
+    std::shared_ptr<globjects::Program> m_program;
+    std::shared_ptr<globjects::Texture> m_texture;
 
     int m_samplerIndex;
 
 protected:
 	static const char * s_defaultVertexShaderSource;
-	static const char * s_defaultFagmentShaderSource;
+    static const char * s_defaultFragmentShaderSource;
 };

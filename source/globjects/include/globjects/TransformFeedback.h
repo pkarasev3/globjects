@@ -59,6 +59,7 @@ class GLOBJECTS_API TransformFeedback : public Object
 {
 public:
 	TransformFeedback();
+    virtual ~TransformFeedback();
 
     virtual void accept(ObjectVisitor & visitor) override;
 
@@ -84,8 +85,6 @@ public:
     virtual gl::GLenum objectType() const override;
 
 protected:
-    virtual ~TransformFeedback();
-
     void bind(gl::GLenum target) const;
     static void unbind(gl::GLenum target);
 };

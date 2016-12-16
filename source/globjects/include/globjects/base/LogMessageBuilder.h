@@ -16,9 +16,6 @@ namespace globjects
 {
 
 
-template <typename T>
-class ref_ptr;
-
 class AbstractLogHandler;
 
 /** \brief Builds a LogMessage from different kinds of primitive types.
@@ -54,7 +51,7 @@ public:
     using WidthManipulator = decltype(std::setw(0));
 
 public:
-    LogMessageBuilder(LogMessageLevel level, AbstractLogHandler * handler);
+    LogMessageBuilder(LogMessageLevel level, std::shared_ptr<AbstractLogHandler> handler);
     LogMessageBuilder(const LogMessageBuilder & builder);
 	virtual ~LogMessageBuilder();
 
@@ -84,7 +81,7 @@ public:
 	
     // globjects base objects
     template <typename T>
-    LogMessageBuilder & operator<<(const ref_ptr<T> & ref_pointer);
+    LogMessageBuilder & operator<<(const std::shared_ptr<T> & ref_pointer);
 	
 	// pointers
 	template <typename T>
@@ -98,7 +95,7 @@ public:
 
 protected:
     LogMessageLevel m_level;
-    AbstractLogHandler * m_handler;
+    std::shared_ptr<AbstractLogHandler> m_handler;
     std::shared_ptr<std::stringstream> m_stream;
 };
 

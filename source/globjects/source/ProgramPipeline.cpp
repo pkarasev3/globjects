@@ -16,7 +16,7 @@ namespace globjects
 
 
 ProgramPipeline::ProgramPipeline()
-: Object(new ProgramPipelineResource())
+: Object(std::unique_ptr<IDResource>(new ProgramPipelineResource()))
 , m_dirty(true)
 {
 }
@@ -26,12 +26,16 @@ ProgramPipeline::~ProgramPipeline()
     if (0 == id())
     {
         for (auto & program : m_programs)
-            program->deregisterListener(this);
+        {
+            program->deregisterListener(ChangeListener::shared_from_this());
+        }
     }
     else
     {
-        for (ref_ptr<Program> program : std::set<ref_ptr<Program>>(m_programs))
+        for (const auto & program : decltype(m_programs)(m_programs))
+        {
             releaseProgram(program);
+        }
     }
 }
 
@@ -44,7 +48,7 @@ void ProgramPipeline::use() const
 {
     if (m_dirty)
     {
-        for (const Program * program : m_programs)
+        for (const auto & program : m_programs)
         {
             program->link();
         }
@@ -63,11 +67,11 @@ void ProgramPipeline::release()
     gl::glBindProgramPipeline(0);
 }
 
-void ProgramPipeline::useStages(Program * program, gl::UseProgramStageMask stages)
+void ProgramPipeline::useStages(std::shared_ptr<Program> program, gl::UseProgramStageMask stages)
 {
     program->setParameter(gl::GL_PROGRAM_SEPARABLE, gl::GL_TRUE);
 
-    program->registerListener(this);
+    program->registerListener(ChangeListener::shared_from_this());
     m_programs.emplace(program);
 
     program->link();
@@ -84,9 +88,9 @@ void ProgramPipeline::releaseStages(gl::UseProgramStageMask stages)
     invalidate();
 }
 
-void ProgramPipeline::releaseProgram(Program * program)
+void ProgramPipeline::releaseProgram(std::shared_ptr<Program> program)
 {
-    program->deregisterListener(this);
+    program->deregisterListener(ChangeListener::shared_from_this());
     m_programs.erase(program);
 
     invalidate();

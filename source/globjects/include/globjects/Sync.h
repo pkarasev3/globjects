@@ -1,9 +1,9 @@
 
 #pragma once
 
-#include <glbinding/gl/types.h>
+#include <memory>
 
-#include <globjects/base/Referenced.h>
+#include <glbinding/gl/types.h>
 
 #include <globjects/globjects_api.h>
 
@@ -12,12 +12,12 @@ namespace globjects
 {
 
 
-class GLOBJECTS_API Sync : public Referenced
+class GLOBJECTS_API Sync
 {
     friend class AbstractObjectNameImplementation;
 
 public:
-    static Sync * fence(gl::GLenum condition);
+    static std::shared_ptr<Sync> fence(gl::GLenum condition);
 
     virtual ~Sync();
 
@@ -35,7 +35,7 @@ protected:
     void wait(gl::UnusedMask flags, gl::GLuint64 timeout);
 
     static gl::GLsync fenceSync(gl::GLenum condition, gl::UnusedMask flags);
-    static Sync * fence(gl::GLenum condition, gl::UnusedMask flags);
+    static std::shared_ptr<Sync> fence(gl::GLenum condition, gl::UnusedMask flags);
 
 protected:
     gl::GLsync m_sync;

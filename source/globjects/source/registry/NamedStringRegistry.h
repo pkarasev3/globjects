@@ -3,6 +3,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <memory>
 
 
 namespace globjects 
@@ -17,15 +18,15 @@ public:
     NamedStringRegistry();
     static NamedStringRegistry & current();
 
-    void registerNamedString(NamedString * namedString);
-    void deregisterNamedString(NamedString * namedString);
+    void registerNamedString(std::shared_ptr<NamedString> namedString);
+    void deregisterNamedString(std::shared_ptr<NamedString> namedString);
 
     bool hasNamedString(const std::string & name);
-    NamedString * namedString(const std::string & name);
+    std::weak_ptr<NamedString> namedString(const std::string & name);
 
     bool hasNativeSupport();
 protected:
-    std::unordered_map<std::string, NamedString*> m_namedStrings;
+    std::unordered_map<std::string, std::shared_ptr<NamedString>> m_namedStrings;
 };
 
 

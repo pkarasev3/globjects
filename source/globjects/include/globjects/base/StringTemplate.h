@@ -16,7 +16,8 @@ namespace globjects
 class GLOBJECTS_API StringTemplate : public StringSourceDecorator
 {
 public:
-    StringTemplate(AbstractStringSource * source);
+    StringTemplate(std::shared_ptr<globjects::AbstractStringSource> source);
+    virtual ~StringTemplate();
 
     virtual std::string string() const override;
     virtual void update() override;
@@ -31,8 +32,6 @@ protected:
     mutable bool m_modifiedSourceValid;
 
 	std::map<std::string, std::string> m_replacements;
-
-    virtual ~StringTemplate();
 
     void invalidate();
     std::string modifiedSource() const;

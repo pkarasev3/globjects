@@ -28,8 +28,8 @@ using namespace gl;
 
 namespace 
 {
-    globjects::Texture * g_texture = nullptr;
-    ScreenAlignedQuad * g_quad = nullptr;
+    std::shared_ptr<globjects::Texture> g_texture;
+    std::shared_ptr<ScreenAlignedQuad> g_quad;
 
     auto g_pageSize = glm::ivec2{ };
     auto g_numPages = glm::ivec2{ };
@@ -47,11 +47,11 @@ void initialize()
     // Initialize OpenGL objects
     int numPageSizes;
     glGetInternalformativ(GL_TEXTURE_2D, GL_RGBA8, GL_NUM_VIRTUAL_PAGE_SIZES_ARB, sizeof(int), &numPageSizes);
-    globjects::info("GL_NUM_VIRTUAL_PAGE_SIZES_ARB = %d;", numPageSizes);
+    globjects::info() << "GL_NUM_VIRTUAL_PAGE_SIZES_ARB = " << numPageSizes;
 
     if (numPageSizes == 0) 
     {
-        globjects::fatal("Sparse Texture not supported for GL_RGBA8");
+        globjects::fatal() << "Sparse Texture not supported for GL_RGBA8";
         exit(1);
     }
 
@@ -59,19 +59,19 @@ void initialize()
     glGetInternalformativ(GL_TEXTURE_2D, GL_RGBA8, GL_VIRTUAL_PAGE_SIZE_X_ARB
         , static_cast<GLsizei>(numPageSizes * sizeof(int)), pageSizesX.data());
     for (int i = 0; i < numPageSizes; ++i)
-        globjects::info("GL_VIRTUAL_PAGE_SIZE_X_ARB[%;] = %;", i, pageSizesX[i]);
+        globjects::info() << "GL_VIRTUAL_PAGE_SIZE_X_ARB[" << i << "] = " << pageSizesX[i];
 
     auto pageSizesY = std::vector<int>(numPageSizes);
     glGetInternalformativ(GL_TEXTURE_2D, GL_RGBA8, GL_VIRTUAL_PAGE_SIZE_Y_ARB
         , static_cast<GLsizei>(numPageSizes * sizeof(int)), pageSizesY.data());
     for (int i = 0; i < numPageSizes; ++i)
-        globjects::info("GL_VIRTUAL_PAGE_SIZE_Y_ARB[%;] = %;", i, pageSizesY[i]);
+        globjects::info() << "GL_VIRTUAL_PAGE_SIZE_Y_ARB[" << i << "] = " << pageSizesY[i];
 
     auto pageSizesZ = std::vector<int>(numPageSizes);
     glGetInternalformativ(GL_TEXTURE_2D, GL_RGBA8, GL_VIRTUAL_PAGE_SIZE_Z_ARB
         , static_cast<GLsizei>(numPageSizes * sizeof(int)), pageSizesZ.data());
     for (int i = 0; i < numPageSizes; ++i)
-        globjects::info("GL_VIRTUAL_PAGE_SIZE_Z_ARB[%;] = %;", i, pageSizesZ[i]);
+        globjects::info() << "GL_VIRTUAL_PAGE_SIZE_Z_ARB[" << i << "] = " << pageSizesZ[i];
 
     g_pageSize = glm::ivec2(pageSizesX[0], pageSizesY[0]);
     g_numPages   = g_textureSize / g_pageSize;
@@ -81,10 +81,9 @@ void initialize()
 
     int maxSparseTextureSize;
     glGetIntegerv(GL_MAX_SPARSE_TEXTURE_SIZE_ARB, &maxSparseTextureSize);
-    globjects::info("GL_MAX_SPARSE_TEXTURE_SIZE_ARB = %d;", maxSparseTextureSize);
+    globjects::info() << "GL_MAX_SPARSE_TEXTURE_SIZE_ARB = " << maxSparseTextureSize;
 
-    g_texture = new globjects::Texture(GL_TEXTURE_2D);
-    g_texture->ref();
+    g_texture = std::shared_ptr<globjects::Texture>(new globjects::Texture(GL_TEXTURE_2D));
 
     // make texture sparse
     g_texture->setParameter(GL_TEXTURE_SPARSE_ARB, static_cast<GLint>(GL_TRUE));
@@ -103,15 +102,12 @@ void initialize()
 
 
     // Create and setup geometry
-    g_quad = new ScreenAlignedQuad(g_texture);
+    g_quad = std::shared_ptr<ScreenAlignedQuad>(new ScreenAlignedQuad(g_texture));
     g_quad->setSamplerUniform(0);
-    g_quad->ref();
 }
 
 void deinitialize()
 {
-    g_texture->unref();
-    g_quad->unref();
 }
 
 void mapNextPage()

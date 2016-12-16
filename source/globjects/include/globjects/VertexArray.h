@@ -6,8 +6,6 @@
 
 #include <glbinding/gl/types.h>
 
-#include <globjects/base/ref_ptr.h>
-
 #include <globjects/globjects_api.h>
 #include <globjects/Object.h>
 
@@ -19,7 +17,7 @@ namespace globjects
 class VertexAttributeBinding;
 
 // http://www.opengl.org/wiki/Vertex_Array_Object
-class GLOBJECTS_API VertexArray : public Object
+class GLOBJECTS_API VertexArray : public Object, public std::enable_shared_from_this<VertexArray>
 {
 public:
     enum class AttributeImplementation
@@ -33,9 +31,10 @@ public:
 
 public:
     VertexArray();
+    virtual ~VertexArray();
 
-    static VertexArray * fromId(gl::GLuint id);
-    static VertexArray * defaultVAO();
+    static std::shared_ptr<VertexArray> fromId(gl::GLuint id);
+    static std::shared_ptr<VertexArray> defaultVAO();
 
     virtual void accept(ObjectVisitor & visitor) override;
 
@@ -102,11 +101,10 @@ public:
     virtual gl::GLenum objectType() const override;
 
 protected:
-    VertexArray(IDResource * resource);
-    virtual ~VertexArray();
+    VertexArray(std::unique_ptr<IDResource> && resource);
 
 protected:
-    std::map<gl::GLuint, ref_ptr<VertexAttributeBinding>> m_bindings;
+    std::map<gl::GLuint, std::unique_ptr<VertexAttributeBinding>> m_bindings;
 
 };
 

@@ -13,9 +13,9 @@ std::vector<std::string> AbstractStringSource::strings() const
     return stringList;
 }
 
-std::vector<const AbstractStringSource*> AbstractStringSource::flatten() const
+std::vector<std::shared_ptr<const AbstractStringSource>> AbstractStringSource::flatten() const
 {
-    std::vector<const AbstractStringSource*> list;
+    std::vector<std::shared_ptr<const AbstractStringSource>> list;
 
     flattenInto(list);
 
@@ -27,9 +27,9 @@ std::string AbstractStringSource::shortInfo() const
     return "";
 }
 
-void AbstractStringSource::flattenInto(std::vector<const AbstractStringSource*> & vector) const
+void AbstractStringSource::flattenInto(std::vector<std::shared_ptr<const AbstractStringSource>> & vector) const
 {
-    vector.push_back(this);
+    vector.push_back(std::enable_shared_from_this<AbstractStringSource>::shared_from_this());
 }
 
 

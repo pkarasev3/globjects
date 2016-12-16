@@ -2,6 +2,7 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 
 #include <globjects/globjects_api.h>
 #include <globjects/LocationIdentity.h>
@@ -18,7 +19,7 @@ class GLOBJECTS_API UniformBlock
     friend class Program;
 public:
     UniformBlock();
-    UniformBlock(const Program * program, const LocationIdentity & m_identity);
+    UniformBlock(std::weak_ptr<const Program> program, const LocationIdentity & m_identity);
 
     const LocationIdentity & identity() const;
 
@@ -33,7 +34,7 @@ public:
     std::string getName() const;
 
 protected:
-    const Program * m_program;
+    std::weak_ptr<const Program> m_program;
     LocationIdentity m_identity;
     gl::GLuint m_bindingIndex;
 

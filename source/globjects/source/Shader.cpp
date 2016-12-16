@@ -1,6 +1,8 @@
 
 #include <globjects/Shader.h>
 
+#include <sstream>
+
 #include <glbinding/gl/enum.h>
 #include <glbinding/gl/functions.h>
 #include <glbinding/gl/boolean.h>
@@ -47,35 +49,35 @@ std::map<std::string, std::string> Shader::s_globalReplacements;
 
 
 Shader::Shader(const GLenum type)
-: Object(new ShaderResource(type))
+: Object(std::unique_ptr<IDResource>(new ShaderResource(type)))
 , m_type(type)
 , m_compiled(false)
 , m_compilationFailed(false)
 {
 }
 
-Shader::Shader(const GLenum type, AbstractStringSource * source, const IncludePaths & includePaths)
+Shader::Shader(const GLenum type, std::shared_ptr<AbstractStringSource> source, const IncludePaths & includePaths)
 : Shader(type)
 {
     setIncludePaths(includePaths);
     setSource(source);
 }
 
-Shader * Shader::fromString(const GLenum type, const std::string & sourceString, const IncludePaths & includePaths)
+std::shared_ptr<Shader> Shader::fromString(const GLenum type, const std::string & sourceString, const IncludePaths & includePaths)
 {
-    return new Shader(type, new StaticStringSource(sourceString), includePaths);
+    return std::shared_ptr<Shader>(new Shader(type, std::shared_ptr<AbstractStringSource>(new StaticStringSource(sourceString)), includePaths));
 }
 
-Shader * Shader::fromFile(const GLenum type, const std::string & filename, const IncludePaths & includePaths)
+std::shared_ptr<Shader> Shader::fromFile(const GLenum type, const std::string & filename, const IncludePaths & includePaths)
 {
-    return new Shader(type, new File(filename, false), includePaths);
+    return std::shared_ptr<Shader>(new Shader(type, std::shared_ptr<AbstractStringSource>(new File(filename, false)), includePaths));
 }
 
 Shader::~Shader()
 {
 	if (m_source)
 	{
-		m_source->deregisterListener(this);
+        m_source->deregisterListener(ChangeListener::shared_from_this());
 	}
 }
 
@@ -104,38 +106,38 @@ GLenum Shader::type() const
 	return m_type;
 }
 
-void Shader::setSource(AbstractStringSource * source)
+void Shader::setSource(std::shared_ptr<AbstractStringSource> source)
 {
     if (source == m_source)
         return;
 
 	if (m_source)
-		m_source->deregisterListener(this);
+        m_source->deregisterListener(ChangeListener::shared_from_this());
 
     if (!s_globalReplacements.empty())
     {
-        StringTemplate * sourceTemplate = new StringTemplate(source);
+        std::shared_ptr<StringTemplate> sourceTemplate = std::shared_ptr<StringTemplate>(new StringTemplate(source));
 
         for (const auto & pair : s_globalReplacements)
             sourceTemplate->replace(pair.first, pair.second);
 
-        source = sourceTemplate;
+        source = std::static_pointer_cast<AbstractStringSource>(sourceTemplate);
     }
 
 	m_source = source;
 
 	if (m_source)
-		m_source->registerListener(this);
+        m_source->registerListener(ChangeListener::shared_from_this());
 
 	updateSource();
 }
 
 void Shader::setSource(const std::string & source)
 {
-    setSource(new StaticStringSource(source));
+    setSource(std::shared_ptr<AbstractStringSource>(new StaticStringSource(source)));
 }
 
-const AbstractStringSource* Shader::source() const
+std::shared_ptr<const AbstractStringSource> Shader::source() const
 {
 	return m_source;
 }

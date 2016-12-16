@@ -49,13 +49,13 @@ void Program::hintBinaryImplementation(const BinaryImplementation impl)
 
 
 Program::Program()
-: Object(new ProgramResource)
+: Object(std::unique_ptr<IDResource>(new ProgramResource))
 , m_linked(false)
 , m_dirty(true)
 {
 }
 
-Program::Program(ProgramBinary * binary)
+Program::Program(std::shared_ptr<ProgramBinary> binary)
 : Program()
 {
     setBinary(binary);
@@ -65,19 +65,19 @@ Program::~Program()
 {
     for (const auto & uniformPair : m_uniforms)
     {
-        uniformPair.second->deregisterProgram(this);
+        uniformPair.second->deregisterProgram(std::enable_shared_from_this<Program>::shared_from_this());
     }
 
     if (id() == 0)
     {
         for (const auto & shader : m_shaders)
         {
-            shader->deregisterListener(this);
+            shader->deregisterListener(std::enable_shared_from_this<ChangeListener>::shared_from_this());
         }
     }
     else
     {
-        for (const auto & shader : std::set<ref_ptr<Shader>>(m_shaders))
+        for (const auto & shader : std::set<std::shared_ptr<Shader>>(m_shaders))
         {
             detach(shader);
         }
@@ -132,25 +132,21 @@ void Program::checkDirty() const
         link();
 }
 
-void Program::attach(Shader * shader)
+void Program::attach(std::shared_ptr<Shader> shader)
 {
-    assert(shader != nullptr);
-
     gl::glAttachShader(id(), shader->id());
 
-    shader->registerListener(this);
+    shader->registerListener(ChangeListener::shared_from_this());
     m_shaders.insert(shader);
 
     invalidate();
 }
 
-void Program::detach(Shader * shader)
+void Program::detach(std::shared_ptr<Shader> shader)
 {
-    assert(shader != nullptr);
-
     glDetachShader(id(), shader->id());
 
-	shader->deregisterListener(this);
+    shader->deregisterListener(ChangeListener::shared_from_this());
 	m_shaders.erase(shader);
 
 	invalidate();
@@ -158,9 +154,11 @@ void Program::detach(Shader * shader)
 
 std::set<Shader *> Program::shaders() const
 {
-	std::set<Shader *> shaders;
-    for (ref_ptr<Shader> shader: m_shaders)
-		shaders.insert(shader);
+    std::set<Shader *> shaders;
+    for (const auto & shader: m_shaders)
+    {
+        shaders.insert(shader.get());
+    }
 	return shaders;
 }
 
@@ -424,7 +422,7 @@ UniformBlock * Program::getUniformBlockByIdentity(const LocationIdentity & ident
 
     if (it == m_uniformBlocks.end())
     {
-        auto insertedIt = m_uniformBlocks.emplace(identity, UniformBlock(this, identity));
+        auto insertedIt = m_uniformBlocks.emplace(identity, UniformBlock(std::enable_shared_from_this<Program>::shared_from_this(), identity));
 
         return &insertedIt.first->second;
     }
@@ -432,24 +430,24 @@ UniformBlock * Program::getUniformBlockByIdentity(const LocationIdentity & ident
     return &it->second;
 }
 
-void Program::addUniform(AbstractUniform * uniform)
+void Program::addUniform(std::shared_ptr<AbstractUniform> uniform)
 {
     assert(uniform != nullptr);
 
-    ref_ptr<AbstractUniform>& uniformReference = m_uniforms[uniform->identity()];
+    std::shared_ptr<AbstractUniform>& uniformReference = m_uniforms[uniform->identity()];
 
 	if (uniformReference)
     {
-		uniformReference->deregisterProgram(this);
+        uniformReference->deregisterProgram(std::enable_shared_from_this<Program>::shared_from_this());
     }
 
 	uniformReference = uniform;
 
-	uniform->registerProgram(this);
+    uniform->registerProgram(std::enable_shared_from_this<Program>::shared_from_this());
 
 	if (m_linked)
     {
-        uniform->update(this, true);
+        uniform->update(std::enable_shared_from_this<Program>::shared_from_this(), true);
     }
 }
 
@@ -458,7 +456,7 @@ void Program::updateUniforms() const
 	// Note: uniform update will check if program is linked
     for (const auto & uniformPair : m_uniforms)
     {
-        uniformPair.second->update(this, true);
+        uniformPair.second->update(std::enable_shared_from_this<Program>::shared_from_this(), true);
     }
 }
 
@@ -468,18 +466,18 @@ void Program::updateUniformBlockBindings() const
         pair.second.updateBinding();
 }
 
-void Program::setBinary(ProgramBinary * binary)
+void Program::setBinary(std::shared_ptr<ProgramBinary> binary)
 {
     if (m_binary == binary)
         return;
 
     if (m_binary)
-        m_binary->deregisterListener(this);
+        m_binary->deregisterListener(std::enable_shared_from_this<ChangeListener>::shared_from_this());
 
     m_binary = binary;
 
     if (m_binary)
-        m_binary->registerListener(this);
+        m_binary->registerListener(std::enable_shared_from_this<ChangeListener>::shared_from_this());
 }
 
 ProgramBinary * Program::getBinary() const

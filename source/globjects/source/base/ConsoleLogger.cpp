@@ -7,6 +7,19 @@
 #include <globjects/base/LogMessageLevel.h>
 
 
+namespace
+{
+
+
+const std::string fatal = "#fatal: ";
+const std::string critical = "#critical: ";
+const std::string warning = "#warning: ";
+const std::string empty = "";
+
+
+} // namespace
+
+
 namespace globjects
 {
 
@@ -19,18 +32,18 @@ void ConsoleLogger::handle(const LogMessage& message)
         std::cout << levelString(message.level()) << message.message() << std::endl;
 }
 
-std::string ConsoleLogger::levelString(const LogMessageLevel level)
+const std::string & ConsoleLogger::levelString(const LogMessageLevel level)
 {
     switch (level)
     {
     case LogMessageLevel::Fatal:
-        return "#fatal: ";
+        return fatal;
     case LogMessageLevel::Critical:
-        return "#critical: ";
+        return critical;
     case LogMessageLevel::Warning:
-        return "#warning: ";
+        return warning;
     default:
-        return "";
+        return empty;
     }
 }
 

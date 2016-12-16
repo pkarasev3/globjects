@@ -28,7 +28,7 @@ public:
     virtual void handle(const LogMessage & message) override;
 
 protected:
-    static std::string levelString(LogMessageLevel level);
+    static const std::string & levelString(LogMessageLevel level);
 };
 
 

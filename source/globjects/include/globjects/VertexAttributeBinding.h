@@ -1,12 +1,12 @@
 
 #pragma once
 
+#include <memory>
+
 #include <glm/fwd.hpp>
 
 #include <glbinding/gl/types.h>
 #include <glbinding/gl/boolean.h>
-
-#include <globjects/base/Referenced.h>
 
 #include <globjects/globjects_api.h>
 
@@ -18,14 +18,15 @@ namespace globjects
 class Buffer;
 class VertexArray;
 
-class GLOBJECTS_API VertexAttributeBinding : public Referenced
+class GLOBJECTS_API VertexAttributeBinding
 {
     friend class AbstractVertexAttributeBindingImplementation;
 
 public:
 	VertexAttributeBinding(
-        VertexArray * vao
+        std::weak_ptr<VertexArray> vao
     ,   const gl::GLint bindingIndex);
+    virtual ~VertexAttributeBinding();
 
     const VertexArray * vao() const;
     VertexArray * vao();
@@ -42,7 +43,7 @@ public:
      */
     const Buffer * buffer() const;
     void setBuffer(
-        const Buffer * vbo
+        std::shared_ptr<const Buffer> vbo
     ,   gl::GLint baseoffset
     ,   gl::GLint stride);
 
@@ -94,15 +95,12 @@ public:
     void setValue(const glm::dmat4 & value);
 
 protected:
-    virtual ~VertexAttributeBinding();
-
-protected:
-    VertexArray * m_vao; // TODO: weak_ptr?
+    std::weak_ptr<VertexArray> m_vao;
    
     gl::GLint m_bindingIndex;
     gl::GLint m_attributeIndex;
     
-    const Buffer * m_vbo;
+    std::shared_ptr<const Buffer> m_vbo;
 
     mutable void * m_bindingData;
 };

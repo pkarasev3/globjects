@@ -37,9 +37,9 @@ using namespace gl;
 
 namespace
 {
-    globjects::Texture * g_texture = nullptr;
-    globjects::Program * g_computeProgram = nullptr;
-    ScreenAlignedQuad * g_quad = nullptr;
+    std::shared_ptr<globjects::Texture> g_texture;
+    std::shared_ptr<globjects::Program> g_computeProgram;
+    std::shared_ptr<ScreenAlignedQuad> g_quad;
 
     auto g_frame = 0u;
     auto g_size = glm::ivec2{ };
@@ -53,26 +53,19 @@ void initialize()
     g_texture->bindImageTexture(0, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_R32F);
     g_texture->setParameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     g_texture->setParameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    g_texture->ref();
 
-    g_computeProgram = new globjects::Program();
+    g_computeProgram = std::shared_ptr<globjects::Program>(new globjects::Program());
 
     const auto dataPath = common::retrieveDataPath("globjects", "dataPath");
     g_computeProgram->attach(globjects::Shader::fromFile(GL_COMPUTE_SHADER, dataPath + "computeshader/cstest.comp"));
     g_computeProgram->setUniform("destTex", 0);
-    g_computeProgram->ref();
 
-    g_quad = new ScreenAlignedQuad(g_texture);
+    g_quad = std::shared_ptr<ScreenAlignedQuad>(new ScreenAlignedQuad(g_texture));
     g_quad->setSamplerUniform(0);
-    g_quad->ref();
 }
 
 void deinitialize()
 {
-    g_texture->unref();
-    g_computeProgram->unref();
-    g_quad->unref();
-
     globjects::detachAllObjects();
 }
 

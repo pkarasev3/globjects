@@ -31,7 +31,7 @@ namespace globjects
 {
 
 
-StringTemplate::StringTemplate(AbstractStringSource * source)
+StringTemplate::StringTemplate(std::shared_ptr<globjects::AbstractStringSource> source)
 : StringSourceDecorator(source)
 , m_modifiedSourceValid(false)
 {

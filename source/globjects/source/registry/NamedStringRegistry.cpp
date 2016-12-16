@@ -31,14 +31,14 @@ bool NamedStringRegistry::hasNamedString(const std::string & name)
     return m_namedStrings.find(name) != m_namedStrings.end();
 }
 
-NamedString * NamedStringRegistry::namedString(const std::string & name)
+std::weak_ptr<NamedString> NamedStringRegistry::namedString(const std::string & name)
 {
     const auto it = m_namedStrings.find(name);
 
     return it == m_namedStrings.end() ? nullptr : it->second;
 }
 
-void NamedStringRegistry::registerNamedString(NamedString * namedString)
+void NamedStringRegistry::registerNamedString(std::shared_ptr<NamedString> namedString)
 {
     if (hasNamedString(namedString->name()))
     {
@@ -48,7 +48,7 @@ void NamedStringRegistry::registerNamedString(NamedString * namedString)
     m_namedStrings[namedString->name()] = namedString;
 }
 
-void NamedStringRegistry::deregisterNamedString(NamedString * namedString)
+void NamedStringRegistry::deregisterNamedString(std::shared_ptr<NamedString> namedString)
 {
     m_namedStrings.erase(namedString->name());
 }

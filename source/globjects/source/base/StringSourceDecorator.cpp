@@ -8,19 +8,17 @@ namespace globjects
 {
 
 
-StringSourceDecorator::StringSourceDecorator(AbstractStringSource * source)
+StringSourceDecorator::StringSourceDecorator(std::shared_ptr<globjects::AbstractStringSource> source)
 : m_internal(source)
 {
-    assert(source != nullptr);
-
-    m_internal->registerListener(this);
+    m_internal->registerListener(ChangeListener::shared_from_this());
 
     update();
 }
 
 StringSourceDecorator::~StringSourceDecorator()
 {
-    m_internal->deregisterListener(this);
+    m_internal->deregisterListener(ChangeListener::shared_from_this());
 }
 
 void StringSourceDecorator::notifyChanged(const globjects::Changeable *)

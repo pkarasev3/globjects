@@ -12,7 +12,7 @@ namespace globjects
 {
 
 
-AttachedTexture::AttachedTexture(Framebuffer * fbo, const GLenum attachment, Texture * texture, GLint level, GLint layer)
+AttachedTexture::AttachedTexture(std::weak_ptr<Framebuffer> fbo, const GLenum attachment, std::shared_ptr<Texture> texture, GLint level, GLint layer)
 : FramebufferAttachment(fbo, attachment)
 , m_texture(texture)
 , m_level(level)
@@ -25,12 +25,12 @@ bool AttachedTexture::isTextureAttachment() const
 	return true;
 }
 
-Texture * AttachedTexture::texture()
+std::shared_ptr<Texture> AttachedTexture::texture()
 {
 	return m_texture;
 }
 
-const Texture * AttachedTexture::texture() const
+std::shared_ptr<const Texture> AttachedTexture::texture() const
 {
     return m_texture;
 }

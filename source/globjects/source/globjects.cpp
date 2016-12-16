@@ -3,6 +3,7 @@
 
 #include <unordered_map>
 #include <mutex>
+#include <sstream>
 
 #include <glbinding/gl/gl.h>
 #include <glbinding/gl/functions.h>

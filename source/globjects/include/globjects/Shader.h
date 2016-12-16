@@ -11,7 +11,6 @@
 
 #include <globjects/base/Changeable.h>
 #include <globjects/base/ChangeListener.h>
-#include <globjects/base/ref_ptr.h>
 
 #include <globjects/Object.h>
 
@@ -54,8 +53,8 @@ public:
     static void hintIncludeImplementation(IncludeImplementation impl);
 
 public:
-    static Shader * fromString(const gl::GLenum type, const std::string & sourceString, const IncludePaths & includePaths = IncludePaths());
-    static Shader * fromFile(const gl::GLenum type, const std::string & filename, const IncludePaths & includePaths = IncludePaths());
+    static std::shared_ptr<Shader> fromString(const gl::GLenum type, const std::string & sourceString, const IncludePaths & includePaths = IncludePaths());
+    static std::shared_ptr<Shader> fromFile(const gl::GLenum type, const std::string & filename, const IncludePaths & includePaths = IncludePaths());
 
     static void globalReplace(const std::string & search, const std::string & replacement);
     static void globalReplace(const std::string & search, int i);
@@ -63,15 +62,16 @@ public:
 
 public:
     Shader(const gl::GLenum type);
-    Shader(const gl::GLenum type, AbstractStringSource * source, const IncludePaths & includePaths = IncludePaths());
+    Shader(const gl::GLenum type, std::shared_ptr<AbstractStringSource> source, const IncludePaths & includePaths = IncludePaths());
+    virtual ~Shader();
 
     virtual void accept(ObjectVisitor& visitor) override;
 
 	gl::GLenum type() const;
 
-    void setSource(AbstractStringSource * source);
+    void setSource(std::shared_ptr<AbstractStringSource> source);
 	void setSource(const std::string & source);
-    const AbstractStringSource* source() const;
+    std::shared_ptr<const AbstractStringSource> source() const;
     void updateSource();
 
     const IncludePaths & includePaths() const;
@@ -93,8 +93,6 @@ public:
     static std::string typeString(gl::GLenum type);
 
 protected:
-    virtual ~Shader();
-
     virtual void notifyChanged(const Changeable * changeable) override;
 
 protected:
@@ -102,7 +100,7 @@ protected:
 
 protected:
 	gl::GLenum m_type;
-    ref_ptr<AbstractStringSource> m_source;
+    std::shared_ptr<AbstractStringSource> m_source;
     IncludePaths m_includePaths;
 
     mutable bool m_compiled;

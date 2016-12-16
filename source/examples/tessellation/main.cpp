@@ -32,8 +32,8 @@ using namespace gl;
 
 namespace 
 {
-    globjects::Program * g_sphere = nullptr;
-    Icosahedron * g_icosahedron = nullptr;
+    std::shared_ptr<globjects::Program> g_sphere;
+    std::shared_ptr<Icosahedron> g_icosahedron;
     glm::mat4 g_viewProjection;
 
     const std::chrono::high_resolution_clock::time_point g_starttime = std::chrono::high_resolution_clock::now();
@@ -57,8 +57,7 @@ void resize()
 
 void initialize()
 {
-    g_sphere = new globjects::Program();
-    g_sphere->ref();
+    g_sphere = std::shared_ptr<globjects::Program>(new globjects::Program());
     const auto dataPath = common::retrieveDataPath("globjects", "dataPath");
     g_sphere->attach(
         globjects::Shader::fromFile(GL_VERTEX_SHADER,          dataPath + "tessellation/sphere.vert")
@@ -68,16 +67,13 @@ void initialize()
     ,   globjects::Shader::fromFile(GL_FRAGMENT_SHADER,        dataPath + "tessellation/sphere.frag")
     ,   globjects::Shader::fromFile(GL_FRAGMENT_SHADER,        dataPath + "tessellation/phong.frag"));
 
-    g_icosahedron = new Icosahedron();
-    g_icosahedron->ref();
+    g_icosahedron = std::shared_ptr<Icosahedron>(new Icosahedron());
 
     resize();
 }
 
 void deinitialize()
 {
-    g_sphere->unref();
-    g_icosahedron->unref();
 }
 
 void draw()

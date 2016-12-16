@@ -50,10 +50,12 @@ public:
 
     Texture();
     Texture(gl::GLenum target);
-    static Texture * fromId(gl::GLuint id, gl::GLenum  target);
+    virtual ~Texture();
 
-    static Texture * createDefault();
-    static Texture * createDefault(gl::GLenum target);
+    static std::shared_ptr<Texture> fromId(gl::GLuint id, gl::GLenum  target);
+
+    static std::shared_ptr<Texture> createDefault();
+    static std::shared_ptr<Texture> createDefault(gl::GLenum target);
 
     virtual void accept(ObjectVisitor & visitor) override;
 
@@ -143,13 +145,12 @@ public:
     TextureHandle textureHandle(Sampler * sampler) const;
 
     void pageCommitment(gl::GLint level, gl::GLint xOffset, gl::GLint yOffset, gl::GLint zOffset, gl::GLsizei width, gl::GLsizei height, gl::GLsizei depth, gl::GLboolean commit) const;
-    void pageCommitment(gl::GLint level, const glm::ivec3& offset, const glm::ivec3& size, gl::GLboolean commit) const;
+    void pageCommitment(gl::GLint level, const glm::ivec3 & offset, const glm::ivec3 & size, gl::GLboolean commit) const;
 
     virtual gl::GLenum objectType() const override;
 
 protected:
-    Texture(IDResource * resource, gl::GLenum target);
-    virtual ~Texture();
+    Texture(std::unique_ptr<IDResource> && resource, gl::GLenum target);
 
 protected:
     gl::GLenum m_target;

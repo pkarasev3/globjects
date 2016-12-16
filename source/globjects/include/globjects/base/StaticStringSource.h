@@ -2,6 +2,7 @@
 #pragma once
 
 #include <string>
+#include <memory>
 
 #include <globjects/globjects_api.h>
 #include <globjects/base/AbstractStringSource.h>

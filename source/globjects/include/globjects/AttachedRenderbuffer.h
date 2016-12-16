@@ -1,9 +1,9 @@
 
 #pragma once
 
-#include <glbinding/gl/types.h>
+#include <memory>
 
-#include <globjects/base/ref_ptr.h>
+#include <glbinding/gl/types.h>
 
 #include <globjects/globjects_api.h>
 #include <globjects/FramebufferAttachment.h>
@@ -27,15 +27,15 @@ class Framebuffer;
 class GLOBJECTS_API AttachedRenderbuffer : public FramebufferAttachment
 {
 public:
-    AttachedRenderbuffer(Framebuffer * fbo,  gl::GLenum attachment, Renderbuffer * renderBuffer);
+    AttachedRenderbuffer(std::weak_ptr<Framebuffer> fbo,  gl::GLenum attachment, std::shared_ptr<Renderbuffer> renderBuffer);
 
     virtual bool isRenderBufferAttachment() const override;
 
-	Renderbuffer * renderBuffer();
-    const Renderbuffer * renderBuffer() const;
+    std::shared_ptr<Renderbuffer> renderBuffer();
+    std::shared_ptr<const Renderbuffer> renderBuffer() const;
 
 protected:
-    ref_ptr<Renderbuffer> m_renderBuffer;
+    std::shared_ptr<Renderbuffer> m_renderBuffer;
 };
 
 

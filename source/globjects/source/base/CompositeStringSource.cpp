@@ -14,27 +14,29 @@ CompositeStringSource::CompositeStringSource()
 {
 }
 
-CompositeStringSource::CompositeStringSource(const std::vector<AbstractStringSource*> & sources)
+CompositeStringSource::CompositeStringSource(const std::vector<std::shared_ptr<AbstractStringSource>> & sources)
 : m_dirty(true)
 {
-    for (AbstractStringSource * source : sources)
+    for (const auto & source : sources)
+    {
         m_sources.push_back(source);
+    }
 }
 
 CompositeStringSource::~CompositeStringSource()
 {
-    for (ref_ptr<AbstractStringSource> source : m_sources)
+    for (const auto & source : m_sources)
     {
-        source->deregisterListener(this);
+        source->deregisterListener(ChangeListener::shared_from_this());
     }
 }
 
-void CompositeStringSource::appendSource(AbstractStringSource * source)
+void CompositeStringSource::appendSource(std::shared_ptr<AbstractStringSource> source)
 {
     assert(source != nullptr);
 
     m_sources.push_back(source);
-    source->registerListener(this);
+    source->registerListener(ChangeListener::shared_from_this());
     changed();
 }
 
@@ -64,9 +66,9 @@ std::vector<std::string> CompositeStringSource::strings() const
     return m_strings;
 }
 
-void CompositeStringSource::flattenInto(std::vector<const AbstractStringSource*>& vector) const
+void CompositeStringSource::flattenInto(std::vector<std::shared_ptr<const AbstractStringSource>> & vector) const
 {
-    for (const ref_ptr<AbstractStringSource>& source : m_sources)
+    for (const auto & source : m_sources)
     {
         source->flattenInto(vector);
     }
@@ -76,7 +78,7 @@ void CompositeStringSource::update() const
 {
     m_strings.clear();
 
-    for (const ref_ptr<AbstractStringSource>& source : m_sources)
+    for (const std::shared_ptr<AbstractStringSource>& source : m_sources)
     {
         for (const std::string & str : source->strings())
         {
@@ -91,7 +93,7 @@ std::string CompositeStringSource::shortInfo() const
 {
     std::stringstream info;
 
-    for (const ref_ptr<AbstractStringSource>& source : m_sources)
+    for (const auto & source : m_sources)
     {
         info << source->shortInfo() << std::endl;
     }

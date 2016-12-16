@@ -13,12 +13,11 @@ namespace globjects
 {
 
 
-LogMessageBuilder::LogMessageBuilder(const LogMessageLevel level, AbstractLogHandler * handler)
+LogMessageBuilder::LogMessageBuilder(const LogMessageLevel level, std::shared_ptr<AbstractLogHandler> handler)
 : m_level(level)
 , m_handler(handler)
 , m_stream(new std::stringstream)
 {
-    assert(handler != nullptr);
 }
 
 LogMessageBuilder::LogMessageBuilder(const LogMessageBuilder & builder)

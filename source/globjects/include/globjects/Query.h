@@ -66,10 +66,12 @@ class GLOBJECTS_API Query : public Object
 {
 public:
     Query();
-    static Query * fromId(gl::GLuint id);
+    virtual ~Query();
 
-    static Query * current(gl::GLenum target);
-    static Query * timestamp();
+    static std::shared_ptr<Query> fromId(gl::GLuint id);
+
+    static std::shared_ptr<Query> current(gl::GLenum target);
+    static std::shared_ptr<Query> timestamp();
 	
     static gl::GLint get(gl::GLenum target, gl::GLenum pname);
     static gl::GLint getIndexed(gl::GLenum target, gl::GLuint index, gl::GLenum pname);
@@ -108,10 +110,7 @@ public:
 
 protected:
 
-    Query(IDResource * resource);
-    virtual ~Query();
-
-    static gl::GLuint genQuery();
+    Query(std::unique_ptr<IDResource> && resource);
 
     void counter(gl::GLenum target) const;
 };

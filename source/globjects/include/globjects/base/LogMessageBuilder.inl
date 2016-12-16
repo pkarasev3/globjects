@@ -7,15 +7,19 @@ namespace globjects
 
 
 template <typename T>
-LogMessageBuilder& LogMessageBuilder::operator<<(const ref_ptr<T> & ref_pointer)
+LogMessageBuilder& LogMessageBuilder::operator<<(const std::shared_ptr<T> & ref_pointer)
 {
-    return *this << ref_pointer.get();
+    *this << ref_pointer.get();
+
+    return *this;
 }
 
 template <typename T>
 LogMessageBuilder& LogMessageBuilder::operator<<(const T * pointer)
 {
-    return *this << static_cast<const void*>(pointer);
+    *this << static_cast<const void*>(pointer);
+
+    return *this;
 }
 
 template <typename T>

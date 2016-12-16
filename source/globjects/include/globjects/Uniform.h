@@ -40,15 +40,14 @@ public:
     Uniform(gl::GLint location, const T & value);
     Uniform(const std::string & name);
     Uniform(const std::string & name, const T & value);
+    virtual ~Uniform();
 
     void set(const T & value);
 
     const T & value() const;
 
 protected:
-    virtual ~Uniform();
-
-    virtual void updateAt(const Program * program, gl::GLint location) const override;
+    virtual void updateAt(std::weak_ptr<const Program> program, gl::GLint location) const override;
 
 protected:
     T m_value; ///< The uniforms value, explictly required when relinking programs.

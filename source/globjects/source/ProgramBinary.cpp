@@ -12,18 +12,18 @@ namespace globjects
 
 
 ProgramBinary::ProgramBinary(const GLenum binaryFormat, const std::vector<char> & binaryData)
-: ProgramBinary(binaryFormat, new StaticStringSource(binaryData.data(), binaryData.size()))
+: ProgramBinary(binaryFormat, std::shared_ptr<AbstractStringSource>(new StaticStringSource(binaryData.data(), binaryData.size())))
 {
 }
 
-ProgramBinary::ProgramBinary(const GLenum binaryFormat, AbstractStringSource * dataSource)
+ProgramBinary::ProgramBinary(const GLenum binaryFormat, std::shared_ptr<AbstractStringSource> dataSource)
 : m_binaryFormat(binaryFormat)
 , m_dataSource(dataSource)
 , m_valid(false)
 {
     if (m_dataSource)
     {
-        m_dataSource->registerListener(this);
+        m_dataSource->registerListener(ChangeListener::shared_from_this());
     }
 }
 
@@ -31,7 +31,7 @@ ProgramBinary::~ProgramBinary()
 {
     if (m_dataSource)
     {
-        m_dataSource->deregisterListener(this);
+        m_dataSource->deregisterListener(ChangeListener::shared_from_this());
     }
 }
 

@@ -62,29 +62,30 @@ const LocationIdentity & AbstractUniform::identity() const
     return m_identity;
 }
 
-void AbstractUniform::registerProgram(Program * program)
+void AbstractUniform::registerProgram(std::weak_ptr<Program> program)
 {
-    assert(program != nullptr);
-
-	m_programs.insert(program);
+    m_programs.insert(program);
 }
 
-void AbstractUniform::deregisterProgram(Program * program)
+void AbstractUniform::deregisterProgram(std::weak_ptr<Program> program)
 {
-    assert(program != nullptr);
-
-	m_programs.erase(program);
+    m_programs.erase(program);
 }
 
 void AbstractUniform::changed()
 {
-	for (Program * program : m_programs)
+    for (const auto & program : m_programs)
     {
-        update(program, false);
+        const auto ptr = program.lock();
+
+        if (ptr)
+        {
+            update(program, false);
+        }
     }
 }
 
-GLint AbstractUniform::locationFor(const Program *program) const
+GLint AbstractUniform::locationFor(std::weak_ptr<const Program> program) const
 {
     if (m_identity.isLocation())
         return m_identity.location();
@@ -96,28 +97,38 @@ GLint AbstractUniform::locationFor(const Program *program) const
         return it->second;
     }
 
-    gl::GLint location = program->getUniformLocation(m_identity.name());
+    const auto ptr = program.lock();
 
-    m_locations.emplace(program, location);
+    if (ptr)
+    {
+        gl::GLint location = ptr->getUniformLocation(m_identity.name());
 
-    return location;
+        m_locations.emplace(program, location);
+
+        return location;
+    }
+
+    return -1;
 }
 
-void AbstractUniform::update(const Program * program, bool invalidateLocation) const
+void AbstractUniform::update(std::weak_ptr<const Program> program, bool invalidateLocation) const
 {
-    assert(program != nullptr);
-
     if (invalidateLocation)
     {
         m_locations.erase(program);
     }
 
-    if (!program->isLinked())
-    {
-        return;
-    }
+    const auto ptr = program.lock();
 
-    updateAt(program, locationFor(program));
+    if (ptr)
+    {
+        if (!ptr->isLinked())
+        {
+            return;
+        }
+
+        updateAt(program, locationFor(program));
+    }
 }
 
 void AbstractUniform::setValue(const Program * program, const GLint location, const float & value) const

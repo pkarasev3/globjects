@@ -12,29 +12,41 @@ namespace globjects
 
 void Changeable::changed() const
 {
-	for (ChangeListener * listener: m_listeners)
+    for (const auto & listener: m_listeners)
 	{
-		listener->notifyChanged(this);
+        auto ptr = listener.lock();
+
+        if (ptr)
+        {
+            ptr->notifyChanged(this);
+        }
 	}
 }
 
-void Changeable::registerListener(ChangeListener * listener)
+void Changeable::registerListener(std::weak_ptr<ChangeListener> listener)
 {
-    assert(listener != nullptr);
+    const auto ptr = listener.lock();
 
-	m_listeners.insert(listener);
-    listener->addSubject(this);
+    if (ptr)
+    {
+        m_listeners.insert(listener);
+        ptr->addSubject(shared_from_this());
+    }
 }
 
-void Changeable::deregisterListener(ChangeListener * listener)
+void Changeable::deregisterListener(std::weak_ptr<ChangeListener> listener)
 {
-    assert(listener != nullptr);
-
     if (m_listeners.find(listener) == m_listeners.end())
         return;
 
 	m_listeners.erase(listener);
-    listener->removeSubject(this);
+
+    const auto ptr = listener.lock();
+
+    if (ptr)
+    {
+        ptr->removeSubject(shared_from_this());
+    }
 }
 
 

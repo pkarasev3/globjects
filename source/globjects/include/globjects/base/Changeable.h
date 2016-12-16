@@ -2,6 +2,7 @@
 #pragma once
 
 #include <set>
+#include <memory>
 
 #include <globjects/globjects_api.h>
 
@@ -19,16 +20,16 @@ class ChangeListener;
     
     \see ChangeListener
  */
-class GLOBJECTS_API Changeable
+class GLOBJECTS_API Changeable : public std::enable_shared_from_this<Changeable>
 {
 public:
     void changed() const;
 
-	void registerListener(ChangeListener * listener);
-	void deregisterListener(ChangeListener * listener);
+    void registerListener(std::weak_ptr<ChangeListener> listener);
+    void deregisterListener(std::weak_ptr<ChangeListener> listener);
 
 private:
-    std::set<ChangeListener *> m_listeners;
+    std::set<std::weak_ptr<ChangeListener>, std::owner_less<std::weak_ptr<ChangeListener>>> m_listeners;
 };
 
 

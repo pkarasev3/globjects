@@ -15,12 +15,11 @@ namespace globjects
 
 
 UniformBlock::UniformBlock()
-: m_program(nullptr)
-, m_bindingIndex(0)
+: m_bindingIndex(0)
 {
 }
 
-UniformBlock::UniformBlock(const Program * program, const LocationIdentity & identity)
+UniformBlock::UniformBlock(std::weak_ptr<const Program> program, const LocationIdentity & identity)
 : m_program(program)
 , m_identity(identity)
 , m_bindingIndex(0)
@@ -45,23 +44,40 @@ GLuint UniformBlock::blockIndex() const
         return m_identity.location();
 
     if (m_identity.isName())
-        return m_program->getUniformBlockIndex(m_identity.name());
+    {
+        const auto ptr = m_program.lock();
+
+        if (ptr)
+        {
+            return ptr->getUniformBlockIndex(m_identity.name());
+        }
+    }
 
     return GL_INVALID_INDEX;
 }
 
 void UniformBlock::updateBinding() const
 {
-    m_program->checkDirty();
+    const auto ptr = m_program.lock();
 
-    glUniformBlockBinding(m_program->id(), blockIndex(), m_bindingIndex);
+    if (ptr)
+    {
+        ptr->checkDirty();
+
+        glUniformBlockBinding(ptr->id(), blockIndex(), m_bindingIndex);
+    }
 
 }
 void UniformBlock::getActive(const GLenum pname, GLint * params) const
 {
-    m_program->checkDirty();
+    const auto ptr = m_program.lock();
 
-    glGetActiveUniformBlockiv(m_program->id(), blockIndex(), pname, params);
+    if (ptr)
+    {
+        ptr->checkDirty();
+
+        glGetActiveUniformBlockiv(ptr->id(), blockIndex(), pname, params);
+    }
 }
 
 GLint UniformBlock::getActive(const GLenum pname) const
@@ -80,19 +96,29 @@ std::vector<GLint> UniformBlock::getActive(const GLenum pname, const GLint param
 
 std::vector<GLint> UniformBlock::getActiveUniformIndices() const
 {
-    return getActive(GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, getActive(GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS));}
+    return getActive(GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, getActive(GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS));
+}
 
 std::string UniformBlock::getName() const
 {
     if (m_identity.isName())
+    {
         return m_identity.name();
+    }
 
-    GLint length = getActive(GL_UNIFORM_BLOCK_NAME_LENGTH);
-    std::vector<char> name(length);
+    const auto ptr = m_program.lock();
 
-    glGetActiveUniformBlockName(m_program->id(), blockIndex(), length, nullptr, name.data());
+    if (ptr)
+    {
+        GLint length = getActive(GL_UNIFORM_BLOCK_NAME_LENGTH);
+        std::vector<char> name(length);
 
-    return std::string(name.data(), length);
+        glGetActiveUniformBlockName(ptr->id(), blockIndex(), length, nullptr, name.data());
+
+        return std::string(name.data(), length);
+    }
+
+    return std::string("");
 }
 
 

@@ -21,7 +21,7 @@ void Program::setUniformByIdentity(const LocationIdentity & identity, const T & 
     {
         warning() << "Uniform type mismatch on set uniform. Uniform will be replaced.";
 
-        addUniform(identity.isName() ? new Uniform<T>(identity.name(), value) : new Uniform<T>(identity.location(), value));
+        addUniform(std::shared_ptr<AbstractUniform>(identity.isName() ? new Uniform<T>(identity.name(), value) : new Uniform<T>(identity.location(), value)));
         return;
     }
     uniform->set(value);
@@ -30,15 +30,15 @@ void Program::setUniformByIdentity(const LocationIdentity & identity, const T & 
 template<typename T>
 Uniform<T> * Program::getUniformByIdentity(const LocationIdentity & identity)
 {
-    if (m_uniforms.count(identity))
-        return m_uniforms.at(identity)->as<T>();
+    const auto it = m_uniforms.find(identity);
+    if (it != m_uniforms.end())
+        return it->second->as<T>();
 
     // create new uniform if none named <name> exists
 
     Uniform<T> * uniform = identity.isName() ? new Uniform<T>(identity.name()) : new Uniform<T>(identity.location());
 
-    m_uniforms[uniform->identity()] = uniform;
-    uniform->registerProgram(this);
+    addUniform(std::shared_ptr<AbstractUniform>(uniform));
 
     return uniform;
 }
@@ -46,15 +46,15 @@ Uniform<T> * Program::getUniformByIdentity(const LocationIdentity & identity)
 template<typename T>
 const Uniform<T> * Program::getUniformByIdentity(const LocationIdentity & identity) const
 {
-    if (m_uniforms.count(identity))
-        return m_uniforms.at(identity)->as<T>();
+    const auto it = m_uniforms.find(identity);
+    if (it != m_uniforms.end())
+        return it->second->as<T>();
 
     // create new uniform if none named <name> exists
 
     Uniform<T> * uniform = identity.isName() ? new Uniform<T>(identity.name()) : new Uniform<T>(identity.location());
 
-    m_uniforms[uniform->identity()] = uniform;
-    uniform->registerProgram(this);
+    const_cast<Program*>(this)->addUniform(std::shared_ptr<AbstractUniform>(uniform));
 
     return uniform;
 }
@@ -97,7 +97,7 @@ const Uniform<T> * Program::getUniform(gl::GLint location) const
 }
 
 template <class ...Shaders>
-void Program::attach(Shader * shader, Shaders... shaders)
+void Program::attach(std::shared_ptr<Shader> shader, Shaders... shaders)
 {
     attach(shader);
 

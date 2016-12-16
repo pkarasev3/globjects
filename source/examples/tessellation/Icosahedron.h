@@ -3,13 +3,11 @@
 #include <unordered_map>
 #include <array>
 #include <vector>
+#include <memory>
 
 #include <glm/glm.hpp>
 
 #include <glbinding/gl/gl.h>
-
-#include <globjects/base/Referenced.h>
-#include <globjects/base/ref_ptr.h>
 
 
 namespace globjects
@@ -21,7 +19,7 @@ class Buffer;
 }
 
 
-class Icosahedron : public globjects::Referenced
+class Icosahedron
 {
 public:
     using Face = std::array<gl::GLushort, 3>;
@@ -43,6 +41,8 @@ public:
     ,   const gl::GLint positionLocation = 0
     ,   const gl::GLint normalLocation = 1);
 
+    virtual ~Icosahedron();
+
     /** draws the icosahedron as single triangles (TODO: generate set of triangle strips?)
     */
     void draw();
@@ -60,13 +60,10 @@ protected:
     ,   std::unordered_map<glm::uint, gl::GLushort> & cache);
 
 protected:
-    virtual ~Icosahedron();
+    std::shared_ptr<globjects::VertexArray> m_vao;
 
-protected:
-    globjects::ref_ptr<globjects::VertexArray> m_vao;
-
-    globjects::ref_ptr<globjects::Buffer> m_vertices;
-    globjects::ref_ptr<globjects::Buffer> m_indices;
+    std::shared_ptr<globjects::Buffer> m_vertices;
+    std::shared_ptr<globjects::Buffer> m_indices;
 
     gl::GLsizei m_size;
 };

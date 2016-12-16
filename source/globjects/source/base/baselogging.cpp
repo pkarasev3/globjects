@@ -11,7 +11,7 @@ namespace
 
 
 globjects::LogMessageLevel l_verbosityLevel = globjects::LogMessageLevel::Info;
-globjects::AbstractLogHandler * l_logHandler = new globjects::ConsoleLogger();
+std::shared_ptr<globjects::AbstractLogHandler> l_logHandler(new globjects::ConsoleLogger());
 
 
 } // namespace
@@ -23,7 +23,7 @@ namespace globjects
 
 LogMessageBuilder info(const LogMessageLevel level)
 {
-    return LogMessageBuilder(level, level <= l_verbosityLevel ? l_logHandler : nullptr);
+    return LogMessageBuilder(level, level <= l_verbosityLevel ? l_logHandler : std::shared_ptr<AbstractLogHandler>(nullptr));
 }
 
 LogMessageBuilder debug()
@@ -48,12 +48,11 @@ LogMessageBuilder fatal()
 
 AbstractLogHandler * loggingHandler()
 {
-    return l_logHandler;
+    return l_logHandler.get();
 }
 
-void setLoggingHandler(AbstractLogHandler* handler)
+void setLoggingHandler(std::shared_ptr<AbstractLogHandler> handler)
 {
-    delete l_logHandler;
     l_logHandler = handler;
 }
 

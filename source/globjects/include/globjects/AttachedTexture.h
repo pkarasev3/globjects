@@ -1,9 +1,9 @@
 
 #pragma once
 
-#include <glbinding/gl/types.h>
+#include <memory>
 
-#include <globjects/base/ref_ptr.h>
+#include <glbinding/gl/types.h>
 
 #include <globjects/globjects_api.h>
 #include <globjects/FramebufferAttachment.h>
@@ -26,12 +26,12 @@ class Framebuffer;
 class GLOBJECTS_API AttachedTexture : public FramebufferAttachment
 {
 public:
-    AttachedTexture(Framebuffer * fbo, gl::GLenum attachment, Texture * texture, gl::GLint level, gl::GLint layer = -1);
+    AttachedTexture(std::weak_ptr<Framebuffer> fbo, gl::GLenum attachment, std::shared_ptr<Texture> texture, gl::GLint level, gl::GLint layer = -1);
 
     virtual bool isTextureAttachment() const override;
 
-    Texture * texture();
-    const Texture * texture() const;
+    std::shared_ptr<Texture> texture();
+    std::shared_ptr<const Texture> texture() const;
 
     gl::GLint level() const;
 
@@ -39,7 +39,7 @@ public:
     gl::GLint layer() const;
 
 protected:
-    ref_ptr<Texture> m_texture;
+    std::shared_ptr<Texture> m_texture;
     gl::GLint m_level;
     gl::GLint m_layer;
 };

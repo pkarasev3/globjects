@@ -5,11 +5,10 @@
 #include <set>
 #include <vector>
 #include <array>
-#include <unordered_map>
+#include <map>
+#include <memory>
 
 #include <glm/fwd.hpp>
-
-#include <globjects/base/Referenced.h>
 
 #include <globjects/globjects_api.h>
 
@@ -31,7 +30,7 @@ template<typename T> class Uniform;
  * \see Uniform
  * \see Program
  */
-class GLOBJECTS_API AbstractUniform : public Referenced
+class GLOBJECTS_API AbstractUniform
 {
 	friend class Program; ///< Programs (de)register themselves.
 
@@ -61,14 +60,16 @@ public:
      * abstractUniform->as<float>()->setValue(3.142f);
      * \endcode
 	*/
-	template<typename T> Uniform<T> * as();
-    template<typename T> const Uniform<T> * as() const;
+    template<typename T>
+    Uniform<T> * as();
+    template<typename T>
+    const Uniform<T> * as() const;
 
 protected:
     virtual ~AbstractUniform();
 
-	void registerProgram(Program * program);
-	void deregisterProgram(Program * program);
+    void registerProgram(std::weak_ptr<Program> program);
+    void deregisterProgram(std::weak_ptr<Program> program);
 
 	/** Iterates over all programs attached to and calls update.
 		Should be called on every value change (i.e., in Uniform).
@@ -77,13 +78,13 @@ protected:
 
 	/** Sets the uniform's value on the program.
 	*/
-    void update(const Program * program, bool invalidateLocation) const;
+    void update(std::weak_ptr<const Program> program, bool invalidateLocation) const;
 
 	/** This function requires knowledge of the unifom's value.
 	*/
-    virtual void updateAt(const Program * program, gl::GLint location) const = 0;
+    virtual void updateAt(std::weak_ptr<const Program> program, gl::GLint location) const = 0;
 
-    gl::GLint locationFor(const Program * program) const;
+    gl::GLint locationFor(std::weak_ptr<const Program> program) const;
 
 protected:
     void setValue(const Program * program, gl::GLint location, const float & value) const;
@@ -153,8 +154,8 @@ protected:
 
 protected:
     LocationIdentity m_identity;
-    std::set<Program *> m_programs;
-    mutable std::unordered_map<const Program *, gl::GLint> m_locations;
+    std::set<std::weak_ptr<Program>, std::owner_less<std::weak_ptr<Program>>> m_programs;
+    mutable std::map<std::weak_ptr<const Program>, gl::GLint, std::owner_less<std::weak_ptr<const Program>>> m_locations;
 };
 
 

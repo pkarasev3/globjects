@@ -12,7 +12,7 @@ namespace globjects
 {
 
 
-AttachedRenderbuffer::AttachedRenderbuffer(Framebuffer * fbo,  const GLenum attachment, Renderbuffer * renderBuffer)
+AttachedRenderbuffer::AttachedRenderbuffer(std::weak_ptr<Framebuffer> fbo,  const GLenum attachment, std::shared_ptr<Renderbuffer> renderBuffer)
 : FramebufferAttachment(fbo, attachment)
 , m_renderBuffer(renderBuffer)
 {
@@ -23,12 +23,12 @@ bool AttachedRenderbuffer::isRenderBufferAttachment() const
 	return true;
 }
 
-Renderbuffer * AttachedRenderbuffer::renderBuffer()
+std::shared_ptr<Renderbuffer> AttachedRenderbuffer::renderBuffer()
 {
 	return m_renderBuffer;
 }
 
-const Renderbuffer * AttachedRenderbuffer::renderBuffer() const
+std::shared_ptr<const Renderbuffer> AttachedRenderbuffer::renderBuffer() const
 {
     return m_renderBuffer;
 }

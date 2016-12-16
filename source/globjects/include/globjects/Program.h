@@ -4,12 +4,12 @@
 #include <set>
 #include <unordered_map>
 #include <vector>
+#include <memory>
 
 #include <glm/fwd.hpp>
 
 #include <globjects/base/ChangeListener.h>
 #include <globjects/base/Changeable.h>
-#include <globjects/base/ref_ptr.h>
 
 #include <globjects/globjects_api.h>
 
@@ -75,7 +75,7 @@ class Uniform;
     \see http://www.opengl.org/wiki/Program_Object
     \see Shader
  */
-class GLOBJECTS_API Program : public Object, protected ChangeListener, public Changeable
+class GLOBJECTS_API Program : public Object, protected ChangeListener, public Changeable, public std::enable_shared_from_this<Program>
 {
     friend class UniformBlock;
     friend class ProgramBinaryImplementation_GetProgramBinaryARB;
@@ -92,7 +92,8 @@ public:
 
 public:
 	Program();
-    Program(ProgramBinary * binary);
+    Program(std::shared_ptr<ProgramBinary> binary);
+    virtual ~Program();
 
     virtual void accept(ObjectVisitor & visitor) override;
 
@@ -102,18 +103,18 @@ public:
 	bool isUsed() const;
 	bool isLinked() const;
 
-    void attach(Shader * shader);
+    void attach(std::shared_ptr<Shader> shader);
     template <class ...Shaders> 
-    void attach(Shader * shader, Shaders... shaders);
+    void attach(std::shared_ptr<Shader>, Shaders... shaders);
 
-	void detach(Shader * shader);
+    void detach(std::shared_ptr<Shader>);
 
 	std::set<Shader*> shaders() const;
 
     void link() const;
     void invalidate() const;
 
-    void setBinary(ProgramBinary * binary);
+    void setBinary(std::shared_ptr<ProgramBinary> binary);
     ProgramBinary * getBinary() const;
 
     std::string infoLog() const;
@@ -189,7 +190,7 @@ public:
 		gets replaced (and by this the old one gets dereferenced). If the current
 		program is linked, the uniforms value will be passed to the program object.
 	*/
-	void addUniform(AbstractUniform * uniform);
+    void addUniform(std::shared_ptr<AbstractUniform> uniform);
 
     void setShaderStorageBlockBinding(gl::GLuint storageBlockIndex, gl::GLuint storageBlockBinding) const;
 
@@ -201,8 +202,6 @@ public:
     virtual gl::GLenum objectType() const override;
 
 protected:
-    virtual ~Program();
-
     bool checkLinkStatus() const;
     void checkDirty() const;
 
@@ -228,10 +227,10 @@ protected:
     const UniformBlock * getUniformBlockByIdentity(const LocationIdentity & identity) const;
 
 protected:
-    std::set<ref_ptr<Shader>> m_shaders;
-    ref_ptr<ProgramBinary> m_binary;
+    std::set<std::shared_ptr<Shader>> m_shaders;
+    std::shared_ptr<ProgramBinary> m_binary;
 
-    std::unordered_map<LocationIdentity, ref_ptr<AbstractUniform>> m_uniforms;
+    std::unordered_map<LocationIdentity, std::shared_ptr<AbstractUniform>> m_uniforms;
     std::unordered_map<LocationIdentity, UniformBlock> m_uniformBlocks;
 
     mutable bool m_linked;

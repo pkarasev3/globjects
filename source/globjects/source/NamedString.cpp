@@ -17,37 +17,37 @@ namespace globjects
 {
 
 
-NamedString * NamedString::create(const std::string & name, AbstractStringSource * source)
+std::shared_ptr<NamedString> NamedString::create(const std::string & name, std::shared_ptr<AbstractStringSource> source)
 {
     return create(name, source, GL_SHADER_INCLUDE_ARB);
 }
 
-NamedString * NamedString::create(const std::string & name, const std::string & string)
+std::shared_ptr<NamedString> NamedString::create(const std::string & name, const std::string & string)
 {
     return create(name, string, GL_SHADER_INCLUDE_ARB);
 }
 
-NamedString * NamedString::create(const std::string & name, AbstractStringSource * source, const GLenum type)
+std::shared_ptr<NamedString> NamedString::create(const std::string & name, std::shared_ptr<AbstractStringSource> source, const GLenum type)
 {
     if (isNamedString(name))
     {
-        return nullptr;
+        return std::shared_ptr<NamedString>(nullptr);
     }
 
-    return new NamedString(name, source, type);
+    return std::shared_ptr<NamedString>(new NamedString(name, source, type));
 }
 
-NamedString * NamedString::create(const std::string & name, const std::string & string, const GLenum type)
+std::shared_ptr<NamedString> NamedString::create(const std::string & name, const std::string & string, const GLenum type)
 {
     if (isNamedString(name))
     {
-        return nullptr;
+        return std::shared_ptr<NamedString>(nullptr);
     }
 
-    return new NamedString(name, new StaticStringSource(string), type);
+    return std::shared_ptr<NamedString>(new NamedString(name, std::shared_ptr<AbstractStringSource>(new StaticStringSource(string)), type));
 }
 
-NamedString::NamedString(const std::string & name, AbstractStringSource * source, const GLenum type)
+NamedString::NamedString(const std::string & name, std::shared_ptr<AbstractStringSource> source, const GLenum type)
 : m_name(name)
 , m_source(source)
 , m_type(type)
@@ -55,12 +55,12 @@ NamedString::NamedString(const std::string & name, AbstractStringSource * source
     createNamedString();
     registerNamedString();
 
-    m_source->registerListener(this);
+    m_source->registerListener(ChangeListener::shared_from_this());
 }
 
 NamedString::~NamedString()
 {
-    m_source->deregisterListener(this);
+    m_source->deregisterListener(ChangeListener::shared_from_this());
 
     deregisterNamedString();
     deleteNamedString();
@@ -86,12 +86,12 @@ void NamedString::deleteNamedString()
 
 void NamedString::registerNamedString()
 {
-    NamedStringRegistry::current().registerNamedString(this);
+    NamedStringRegistry::current().registerNamedString(std::enable_shared_from_this<NamedString>::shared_from_this());
 }
 
 void NamedString::deregisterNamedString()
 {
-    NamedStringRegistry::current().deregisterNamedString(this);
+    NamedStringRegistry::current().deregisterNamedString(std::enable_shared_from_this<NamedString>::shared_from_this());
 }
 
 bool NamedString::isNamedString(const std::string & name)
@@ -131,11 +131,12 @@ GLint NamedString::getParameter(const GLenum pname) const
     }
 }
 
-NamedString * NamedString::obtain(const std::string & name)
+std::shared_ptr<NamedString> NamedString::obtain(const std::string & name)
 {
-    NamedString * namedString = NamedStringRegistry::current().namedString(name);
+    auto namedString = NamedStringRegistry::current().namedString(name);
+    const auto ptr = namedString.lock();
 
-    if (!namedString && hasNativeSupport() && isNamedString(name))
+    if (!ptr && hasNativeSupport() && isNamedString(name))
     {
         GLint type;
         GLint length;
@@ -150,7 +151,7 @@ NamedString * NamedString::obtain(const std::string & name)
         namedString = create(name, std::string(string.data(), string.size()), static_cast<GLenum>(type));
     }
 
-    return namedString;
+    return ptr;
 }
 
 const std::string & NamedString::name() const
@@ -168,9 +169,9 @@ GLenum NamedString::type() const
     return m_type;
 }
 
-AbstractStringSource * NamedString::stringSource() const
+std::shared_ptr<AbstractStringSource> NamedString::stringSource() const
 {
-    return m_source.get();
+    return m_source;
 }
 
 bool NamedString::hasNativeSupport()

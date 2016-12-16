@@ -2,6 +2,7 @@
 #pragma once
 
 #include <set>
+#include <memory>
 
 
 namespace globjects 
@@ -28,8 +29,8 @@ public:
     std::set<Object *>::iterator begin();
     std::set<Object *>::iterator end();
 
-    Framebuffer * defaultFBO();
-    VertexArray * defaultVAO();
+    std::shared_ptr<Framebuffer> defaultFBO();
+    std::shared_ptr<VertexArray> defaultVAO();
 
 protected:
     void registerObject(Object * object);
@@ -37,8 +38,8 @@ protected:
 
 protected:
     std::set<Object *> m_objects;
-    Framebuffer * m_defaultFBO;
-    VertexArray * m_defaultVAO;
+    std::shared_ptr<Framebuffer> m_defaultFBO;
+    std::shared_ptr<VertexArray> m_defaultVAO;
 };
 
 

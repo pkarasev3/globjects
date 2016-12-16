@@ -57,11 +57,11 @@ void main()
 
 )";
 
-    globjects::Buffer * g_cornerBuffer = nullptr;
-    globjects::Program * g_vertexProgram = nullptr;
-    globjects::Program * g_fragmentProgram = nullptr;
-    globjects::ProgramPipeline * g_programPipeline = nullptr;
-    globjects::VertexArray * g_vao = nullptr;
+    std::shared_ptr<globjects::Buffer> g_cornerBuffer;
+    std::shared_ptr<globjects::Program> g_vertexProgram;
+    std::shared_ptr<globjects::Program> g_fragmentProgram;
+    std::shared_ptr<globjects::ProgramPipeline> g_programPipeline;
+    std::shared_ptr<globjects::VertexArray> g_vao;
 
     auto g_size = glm::ivec2{ };
 }
@@ -69,16 +69,11 @@ void main()
 
 void initialize()
 {
-    g_cornerBuffer = new globjects::Buffer();
-    g_cornerBuffer->ref();
-    g_vertexProgram = new globjects::Program();
-    g_vertexProgram->ref();
-    g_fragmentProgram = new globjects::Program();
-    g_fragmentProgram->ref();
-    g_programPipeline = new globjects::ProgramPipeline();
-    g_programPipeline->ref();
-    g_vao = new globjects::VertexArray();
-    g_vao->ref();
+    g_cornerBuffer = std::shared_ptr<globjects::Buffer>(new globjects::Buffer());
+    g_vertexProgram = std::shared_ptr<globjects::Program>(new globjects::Program());
+    g_fragmentProgram = std::shared_ptr<globjects::Program>(new globjects::Program());
+    g_programPipeline = std::shared_ptr<globjects::ProgramPipeline>(new globjects::ProgramPipeline());
+    g_vao = std::shared_ptr<globjects::VertexArray>(new globjects::VertexArray());
 
     g_vertexProgram->attach(globjects::Shader::fromString(GL_VERTEX_SHADER,  vertexShaderCode));
     g_fragmentProgram->attach(globjects::Shader::fromString(GL_FRAGMENT_SHADER, fragmentShaderCode));
@@ -97,12 +92,6 @@ void initialize()
 
 void deinitialize()
 {
-    g_cornerBuffer->unref();
-    g_vertexProgram->unref();
-    g_fragmentProgram->unref();
-    g_programPipeline->unref();
-    g_vao->unref();
-
     globjects::detachAllObjects();
 }
 

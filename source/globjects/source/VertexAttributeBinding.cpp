@@ -38,7 +38,7 @@ namespace globjects
 
 
 VertexAttributeBinding::VertexAttributeBinding(
-    VertexArray * vao
+    std::weak_ptr<VertexArray> vao
 ,   const GLint bindingIndex)
 : m_vao(vao)
 , m_bindingIndex(bindingIndex)
@@ -46,9 +46,7 @@ VertexAttributeBinding::VertexAttributeBinding(
 , m_vbo(nullptr)
 , m_bindingData(nullptr)
 {
-    assert(vao != nullptr);
-
-	// setAttribute(bindingIndex); // as default - this leads to errors when binding unknown type 
+    // setAttribute(bindingIndex); // as default - this leads to errors when binding unknown type
 }
 
 VertexAttributeBinding::~VertexAttributeBinding()
@@ -57,12 +55,16 @@ VertexAttributeBinding::~VertexAttributeBinding()
 
 const VertexArray * VertexAttributeBinding::vao() const
 {
-    return m_vao;
+    const auto ptr = m_vao.lock();
+
+    return ptr ? ptr.get() : nullptr;
 }
 
 VertexArray * VertexAttributeBinding::vao()
 {
-    return m_vao;
+    const auto ptr = m_vao.lock();
+
+    return ptr ? ptr.get() : nullptr;
 }
 
 void VertexAttributeBinding::setDivisor(GLint divisor)
@@ -88,13 +90,13 @@ GLint VertexAttributeBinding::bindingIndex() const
 
 const Buffer * VertexAttributeBinding::buffer() const
 {
-    return m_vbo;
+    return m_vbo.get();
 }
 
-void VertexAttributeBinding::setBuffer(const Buffer * vbo, const GLint baseoffset, const GLint stride)
+void VertexAttributeBinding::setBuffer(std::shared_ptr<const Buffer> vbo, const GLint baseoffset, const GLint stride)
 {
     m_vbo = vbo;
-    attributeImplementation().bindBuffer(this, vbo, baseoffset, stride);
+    attributeImplementation().bindBuffer(this, vbo.get(), baseoffset, stride);
 }
 
 void VertexAttributeBinding::setFormat(const GLint size, const GLenum type, const GLboolean normalized, const GLuint relativeoffset)
