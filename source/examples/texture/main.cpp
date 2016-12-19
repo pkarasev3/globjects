@@ -25,7 +25,7 @@ using namespace gl;
 namespace 
 {
     std::shared_ptr<globjects::Texture> g_texture;
-    std::shared_ptr<ScreenAlignedQuad> g_quad;
+    std::unique_ptr<ScreenAlignedQuad> g_quad;
 
     auto g_size = glm::ivec2{};
 }
@@ -50,7 +50,7 @@ void initialize()
     g_texture = globjects::Texture::createDefault(GL_TEXTURE_2D);
     g_texture->image2D(0, GL_RGBA8, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
-    g_quad = std::shared_ptr<ScreenAlignedQuad>(new ScreenAlignedQuad(g_texture));
+    g_quad.reset(new ScreenAlignedQuad(g_texture));
     g_quad->setSamplerUniform(0);
 }
 

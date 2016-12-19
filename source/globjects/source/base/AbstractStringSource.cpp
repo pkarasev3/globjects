@@ -29,7 +29,7 @@ std::string AbstractStringSource::shortInfo() const
 
 void AbstractStringSource::flattenInto(std::vector<std::shared_ptr<const AbstractStringSource>> & vector) const
 {
-    vector.push_back(std::enable_shared_from_this<AbstractStringSource>::shared_from_this());
+    vector.push_back(shared_from_this<AbstractStringSource>());
 }
 
 

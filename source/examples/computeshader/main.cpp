@@ -39,7 +39,7 @@ namespace
 {
     std::shared_ptr<globjects::Texture> g_texture;
     std::shared_ptr<globjects::Program> g_computeProgram;
-    std::shared_ptr<ScreenAlignedQuad> g_quad;
+    std::unique_ptr<ScreenAlignedQuad> g_quad;
 
     auto g_frame = 0u;
     auto g_size = glm::ivec2{ };
@@ -54,13 +54,13 @@ void initialize()
     g_texture->setParameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     g_texture->setParameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-    g_computeProgram = std::shared_ptr<globjects::Program>(new globjects::Program());
+    g_computeProgram = globjects::create_shared<globjects::Program>();
 
     const auto dataPath = common::retrieveDataPath("globjects", "dataPath");
     g_computeProgram->attach(globjects::Shader::fromFile(GL_COMPUTE_SHADER, dataPath + "computeshader/cstest.comp"));
     g_computeProgram->setUniform("destTex", 0);
 
-    g_quad = std::shared_ptr<ScreenAlignedQuad>(new ScreenAlignedQuad(g_texture));
+    g_quad = std::unique_ptr<ScreenAlignedQuad>(new ScreenAlignedQuad(g_texture));
     g_quad->setSamplerUniform(0);
 }
 

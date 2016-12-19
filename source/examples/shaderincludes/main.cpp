@@ -29,7 +29,7 @@ using namespace gl;
 namespace
 {
 
-    ScreenAlignedQuad * g_quad = nullptr;
+    std::unique_ptr<ScreenAlignedQuad> g_quad;
 
     auto g_size = glm::ivec2{};
 }
@@ -38,9 +38,9 @@ namespace
 void initialize()
 {
     const auto dataPath = common::retrieveDataPath("globjects", "dataPath");
-    globjects::NamedString::create("/color.glsl", std::shared_ptr<globjects::AbstractStringSource>(new globjects::File(dataPath + "shaderincludes/color.glsl")));
+    globjects::NamedString::create("/color.glsl", globjects::create_shared<globjects::File>(dataPath + "shaderincludes/color.glsl"));
 
-    g_quad = new ScreenAlignedQuad(globjects::Shader::fromFile(GL_FRAGMENT_SHADER, dataPath + "shaderincludes/test.frag"));
+    g_quad.reset(new ScreenAlignedQuad(globjects::Shader::fromFile(GL_FRAGMENT_SHADER, dataPath + "shaderincludes/test.frag")));
 }
 
 void deinitialize()

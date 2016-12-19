@@ -31,7 +31,7 @@ using namespace gl;
 
 namespace 
 {
-    std::shared_ptr<ScreenAlignedQuad> g_quad;
+    std::unique_ptr<ScreenAlignedQuad> g_quad;
     std::shared_ptr<globjects::Buffer> g_buffer;
 
     auto g_size = glm::ivec2{};
@@ -41,7 +41,7 @@ namespace
 void initialize()
 {
     const auto dataPath = common::retrieveDataPath("globjects", "dataPath");
-    g_quad = std::shared_ptr<ScreenAlignedQuad>(new ScreenAlignedQuad(globjects::Shader::fromFile(GL_FRAGMENT_SHADER, dataPath + "ssbo/ssbo.frag")));
+    g_quad.reset(new ScreenAlignedQuad(globjects::Shader::fromFile(GL_FRAGMENT_SHADER, dataPath + "ssbo/ssbo.frag")));
 
     g_quad->program()->setUniform("maximum",     10);
     g_quad->program()->setUniform("rowCount",    10);
@@ -59,7 +59,7 @@ void initialize()
         3,4,5,6,7,8,9,10,1,2,
         2,3,4,5,6,7,8,9,10,1 } };
 
-    g_buffer = std::shared_ptr<globjects::Buffer>(new globjects::Buffer());
+    g_buffer = globjects::create_shared<globjects::Buffer>();
     g_buffer->setData(sizeof(data), data.data(), GL_STATIC_DRAW);
 
     g_buffer->bindBase(GL_SHADER_STORAGE_BUFFER, 1);

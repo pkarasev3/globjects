@@ -16,7 +16,7 @@ namespace globjects
 
 
 ProgramPipeline::ProgramPipeline()
-: Object(std::unique_ptr<IDResource>(new ProgramPipelineResource()))
+: ChangeListener(std::unique_ptr<IDResource>(new ProgramPipelineResource()))
 , m_dirty(true)
 {
 }
@@ -27,7 +27,7 @@ ProgramPipeline::~ProgramPipeline()
     {
         for (auto & program : m_programs)
         {
-            program->deregisterListener(ChangeListener::shared_from_this());
+            program->deregisterListener(shared_from_this<ChangeListener>());
         }
     }
     else
@@ -71,7 +71,7 @@ void ProgramPipeline::useStages(std::shared_ptr<Program> program, gl::UseProgram
 {
     program->setParameter(gl::GL_PROGRAM_SEPARABLE, gl::GL_TRUE);
 
-    program->registerListener(ChangeListener::shared_from_this());
+    program->registerListener(shared_from_this<ChangeListener>());
     m_programs.emplace(program);
 
     program->link();
@@ -90,13 +90,13 @@ void ProgramPipeline::releaseStages(gl::UseProgramStageMask stages)
 
 void ProgramPipeline::releaseProgram(std::shared_ptr<Program> program)
 {
-    program->deregisterListener(ChangeListener::shared_from_this());
+    program->deregisterListener(shared_from_this<ChangeListener>());
     m_programs.erase(program);
 
     invalidate();
 }
 
-void ProgramPipeline::notifyChanged(const Changeable * /*sender*/)
+void ProgramPipeline::notifyChanged(const AbstractChangeable * /*sender*/)
 {
     invalidate();
 }

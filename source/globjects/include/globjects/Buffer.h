@@ -26,7 +26,7 @@ namespace globjects
     The current bound VertexArrayObject and Program will specify the render pipeline and data.
     
     \code{.cpp}
-    Buffer * buffer = new Buffer(gl::GL_SHADER_STORAGE_BUFFER);
+    auto buffer = create_shared<Buffer>(gl::GL_SHADER_STORAGE_BUFFER);
     buffer->setData(sizeof(glm::vec4) * 100, nullptr, gl::GL_DYNAMIC_DRAW); // allocate 100 vec4
     \endcode
     
@@ -56,6 +56,11 @@ public:
     */
     Buffer();
 
+    /** \brief Creates a buffer with an external id.
+        \param id an external OpenGL buffer id
+    */
+    Buffer(std::unique_ptr<IDResource> && resource);
+
     /** Automatically deletes the associated OpenGL buffer unless the object was created with an external id.
         \see https://www.opengl.org/sdk/docs/man4/xhtml/gl::glDeleteBuffers.xml
     */
@@ -66,7 +71,7 @@ public:
         will not delete it in the destructor.
         \param id an external OpenGL buffer id
     */
-    static Buffer * fromId(gl::GLuint id);
+    static std::shared_ptr<Buffer> fromId(gl::GLuint id);
 
     /** \brief Implements the visitor pattern.
         \param visitor The visitor on which visitBuffer will be called.
@@ -266,12 +271,6 @@ public:
     void invalidateSubData(gl::GLintptr offset, gl::GLsizeiptr length) const;
 
     virtual gl::GLenum objectType() const override;
-
-protected:
-    /** \brief Creates a buffer with an external id.
-        \param id an external OpenGL buffer id
-    */
-    Buffer(std::unique_ptr<IDResource> && resource);
 };
 
 

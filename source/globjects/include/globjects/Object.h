@@ -7,6 +7,7 @@
 #include <glbinding/gl/types.h>
 
 #include <globjects/globjects_api.h>
+#include <globjects/base/SharedObject.h>
 
 
 namespace globjects 
@@ -22,7 +23,7 @@ class IDResource;
     The OpenGL name (id) of the OpenGL resource that was provided in the constructor can be queried using id().
     Additionally, an Object can have meaningful name wich can be get and set using name() and setName().
  */
-class GLOBJECTS_API Object
+class GLOBJECTS_API Object : public SharedObject
 {
     friend class AbstractObjectNameImplementation;
 
@@ -55,6 +56,8 @@ public:
 protected:
     Object(std::unique_ptr<IDResource> && resource);
     virtual ~Object();
+
+    virtual void onInitialize() override;
 
 protected:
     std::unique_ptr<IDResource> m_resource;

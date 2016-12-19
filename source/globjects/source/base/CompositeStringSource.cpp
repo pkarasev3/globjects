@@ -15,19 +15,24 @@ CompositeStringSource::CompositeStringSource()
 }
 
 CompositeStringSource::CompositeStringSource(const std::vector<std::shared_ptr<AbstractStringSource>> & sources)
-: m_dirty(true)
+: m_sources(sources)
+, m_dirty(true)
 {
-    for (const auto & source : sources)
-    {
-        m_sources.push_back(source);
-    }
 }
 
 CompositeStringSource::~CompositeStringSource()
 {
     for (const auto & source : m_sources)
     {
-        source->deregisterListener(ChangeListener::shared_from_this());
+        source->deregisterListener(ChangeListener::shared_from_this<ChangeListener>());
+    }
+}
+
+void CompositeStringSource::onInitialize()
+{
+    for (const auto & source : m_sources)
+    {
+        source->registerListener(ChangeListener::shared_from_this<ChangeListener>());
     }
 }
 
@@ -36,11 +41,11 @@ void CompositeStringSource::appendSource(std::shared_ptr<AbstractStringSource> s
     assert(source != nullptr);
 
     m_sources.push_back(source);
-    source->registerListener(ChangeListener::shared_from_this());
+    source->registerListener(ChangeListener::shared_from_this<ChangeListener>());
     changed();
 }
 
-void CompositeStringSource::notifyChanged(const Changeable *)
+void CompositeStringSource::notifyChanged(const AbstractChangeable *)
 {
     m_dirty = true;
     changed();

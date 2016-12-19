@@ -16,6 +16,10 @@ StaticStringSource::StaticStringSource(const char * data, const size_t length)
 {
 }
 
+void StaticStringSource::onInitialize()
+{
+}
+
 std::string StaticStringSource::shortInfo() const
 {
     return "<static string>";

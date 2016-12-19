@@ -72,9 +72,9 @@ const std::array<Icosahedron::Face, 20> Icosahedron::indices()
 }
 
 Icosahedron::Icosahedron(const GLsizei iterations, const GLint positionLocation, const GLint normalLocation)
-: m_vao(new VertexArray)
-, m_vertices(new Buffer)
-, m_indices(new Buffer)
+: m_vao(globjects::create_shared<VertexArray>())
+, m_vertices(globjects::create_shared<Buffer>())
+, m_indices(globjects::create_shared<Buffer>())
 {
     auto v(vertices());
     auto i(indices());

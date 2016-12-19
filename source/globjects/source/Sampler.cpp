@@ -27,7 +27,7 @@ Sampler::Sampler(std::unique_ptr<IDResource> && resource)
 
 std::shared_ptr<Sampler> Sampler::fromId(const GLuint id)
 {
-    return std::shared_ptr<Sampler>(new Sampler(std::unique_ptr<IDResource>(new ExternalResource(id))));
+    return create_shared<Sampler>(std::unique_ptr<IDResource>(new ExternalResource(id)));
 }
 
 Sampler::~Sampler()

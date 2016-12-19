@@ -27,7 +27,7 @@ namespace globjects
 {
 
 
-std::unordered_map<glbinding::ContextHandle, Registry *> Registry::s_registries;
+std::unordered_map<glbinding::ContextHandle, std::unique_ptr<Registry>> Registry::s_registries;
 
 void Registry::registerContext(glbinding::ContextHandle contextId)
 {
@@ -51,9 +51,9 @@ void Registry::registerContext(const glbinding::ContextHandle contextId, const g
     auto it = s_registries.find(sharedContextId);
     assert(it != s_registries.end());
 
-    Registry * registry = new Registry(it->second);
+    Registry * registry = new Registry(it->second.get());
 
-    s_registries[contextId] = registry;
+    s_registries[contextId].reset(registry);
 
     t_currentRegistry = registry;
     //registry->initialize();
@@ -74,7 +74,7 @@ bool Registry::isCurrentContext(glbinding::ContextHandle contextId)
     std::lock_guard<std::recursive_mutex> lock(g_mutex);
 
     const auto it = s_registries.find(contextId);
-    const auto result = it != s_registries.end() && it->second == t_currentRegistry;
+    const auto result = it != s_registries.end() && it->second.get() == t_currentRegistry;
 
     return result;
 }
@@ -91,9 +91,7 @@ void Registry::deregisterContext(const glbinding::ContextHandle contextId)
     {
         std::lock_guard<std::recursive_mutex> lock(g_mutex);
 
-        delete s_registries[contextId];
-
-        s_registries[contextId] = nullptr;
+        s_registries[contextId].reset(nullptr);
     }
 
     t_currentRegistry = nullptr;
@@ -123,13 +121,13 @@ void Registry::setCurrentRegistry(const glbinding::ContextHandle contextId)
 
     if (it != s_registries.end())
     {
-        t_currentRegistry = it->second;
+        t_currentRegistry = it->second.get();
     }
     else
     {
         Registry * registry = new Registry();
 
-        s_registries[contextId] = registry;
+        s_registries[contextId].reset(registry);
 
         t_currentRegistry = registry;
         registry->initialize();

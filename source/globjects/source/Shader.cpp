@@ -49,7 +49,7 @@ std::map<std::string, std::string> Shader::s_globalReplacements;
 
 
 Shader::Shader(const GLenum type)
-: Object(std::unique_ptr<IDResource>(new ShaderResource(type)))
+: Changeable(std::unique_ptr<IDResource>(new ShaderResource(type)))
 , m_type(type)
 , m_compiled(false)
 , m_compilationFailed(false)
@@ -65,19 +65,19 @@ Shader::Shader(const GLenum type, std::shared_ptr<AbstractStringSource> source, 
 
 std::shared_ptr<Shader> Shader::fromString(const GLenum type, const std::string & sourceString, const IncludePaths & includePaths)
 {
-    return std::shared_ptr<Shader>(new Shader(type, std::shared_ptr<AbstractStringSource>(new StaticStringSource(sourceString)), includePaths));
+    return create_shared<Shader>(type, create_shared<StaticStringSource>(sourceString), includePaths);
 }
 
 std::shared_ptr<Shader> Shader::fromFile(const GLenum type, const std::string & filename, const IncludePaths & includePaths)
 {
-    return std::shared_ptr<Shader>(new Shader(type, std::shared_ptr<AbstractStringSource>(new File(filename, false)), includePaths));
+    return create_shared<Shader>(type, create_shared<File>(filename, false), includePaths);
 }
 
 Shader::~Shader()
 {
 	if (m_source)
 	{
-        m_source->deregisterListener(ChangeListener::shared_from_this());
+        m_source->deregisterListener(shared_from_this<ChangeListener>());
 	}
 }
 
@@ -112,11 +112,11 @@ void Shader::setSource(std::shared_ptr<AbstractStringSource> source)
         return;
 
 	if (m_source)
-        m_source->deregisterListener(ChangeListener::shared_from_this());
+        m_source->deregisterListener(shared_from_this<ChangeListener>());
 
     if (!s_globalReplacements.empty())
     {
-        std::shared_ptr<StringTemplate> sourceTemplate = std::shared_ptr<StringTemplate>(new StringTemplate(source));
+        std::shared_ptr<StringTemplate> sourceTemplate = create_shared<StringTemplate>(source);
 
         for (const auto & pair : s_globalReplacements)
             sourceTemplate->replace(pair.first, pair.second);
@@ -127,14 +127,14 @@ void Shader::setSource(std::shared_ptr<AbstractStringSource> source)
 	m_source = source;
 
 	if (m_source)
-        m_source->registerListener(ChangeListener::shared_from_this());
+        m_source->registerListener(shared_from_this<ChangeListener>());
 
 	updateSource();
 }
 
 void Shader::setSource(const std::string & source)
 {
-    setSource(std::shared_ptr<AbstractStringSource>(new StaticStringSource(source)));
+    setSource(create_shared<StaticStringSource>(source));
 }
 
 std::shared_ptr<const AbstractStringSource> Shader::source() const
@@ -142,7 +142,7 @@ std::shared_ptr<const AbstractStringSource> Shader::source() const
 	return m_source;
 }
 
-void Shader::notifyChanged(const Changeable *)
+void Shader::notifyChanged(const AbstractChangeable *)
 {
 	updateSource();
 }

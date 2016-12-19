@@ -21,7 +21,7 @@ void Program::setUniformByIdentity(const LocationIdentity & identity, const T & 
     {
         warning() << "Uniform type mismatch on set uniform. Uniform will be replaced.";
 
-        addUniform(std::shared_ptr<AbstractUniform>(identity.isName() ? new Uniform<T>(identity.name(), value) : new Uniform<T>(identity.location(), value)));
+        addUniform(identity.isName() ? create_shared<Uniform<T>>(identity.name(), value) : create_shared<Uniform<T>>(identity.location(), value));
         return;
     }
     uniform->set(value);
@@ -36,11 +36,11 @@ Uniform<T> * Program::getUniformByIdentity(const LocationIdentity & identity)
 
     // create new uniform if none named <name> exists
 
-    Uniform<T> * uniform = identity.isName() ? new Uniform<T>(identity.name()) : new Uniform<T>(identity.location());
+    auto uniform = identity.isName() ? create_shared<Uniform<T>>(identity.name()) : create_shared<Uniform<T>>(identity.location());
 
-    addUniform(std::shared_ptr<AbstractUniform>(uniform));
+    addUniform(uniform);
 
-    return uniform;
+    return uniform.get();
 }
 
 template<typename T>
@@ -52,9 +52,9 @@ const Uniform<T> * Program::getUniformByIdentity(const LocationIdentity & identi
 
     // create new uniform if none named <name> exists
 
-    Uniform<T> * uniform = identity.isName() ? new Uniform<T>(identity.name()) : new Uniform<T>(identity.location());
+    auto uniform = identity.isName() ? create_shared<Uniform<T>>(identity.name()) : create_shared<Uniform<T>>(identity.location());
 
-    const_cast<Program*>(this)->addUniform(std::shared_ptr<AbstractUniform>(uniform));
+    const_cast<Program*>(this)->addUniform(uniform);
 
     return uniform;
 }

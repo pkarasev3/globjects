@@ -29,7 +29,7 @@ using namespace gl;
 namespace 
 {
     std::shared_ptr<globjects::Texture> g_texture;
-    std::shared_ptr<ScreenAlignedQuad> g_quad;
+    std::unique_ptr<ScreenAlignedQuad> g_quad;
 
     auto g_pageSize = glm::ivec2{ };
     auto g_numPages = glm::ivec2{ };
@@ -83,7 +83,7 @@ void initialize()
     glGetIntegerv(GL_MAX_SPARSE_TEXTURE_SIZE_ARB, &maxSparseTextureSize);
     globjects::info() << "GL_MAX_SPARSE_TEXTURE_SIZE_ARB = " << maxSparseTextureSize;
 
-    g_texture = std::shared_ptr<globjects::Texture>(new globjects::Texture(GL_TEXTURE_2D));
+    g_texture = globjects::create_shared<globjects::Texture>(GL_TEXTURE_2D);
 
     // make texture sparse
     g_texture->setParameter(GL_TEXTURE_SPARSE_ARB, static_cast<GLint>(GL_TRUE));
@@ -102,7 +102,7 @@ void initialize()
 
 
     // Create and setup geometry
-    g_quad = std::shared_ptr<ScreenAlignedQuad>(new ScreenAlignedQuad(g_texture));
+    g_quad.reset(new ScreenAlignedQuad(g_texture));
     g_quad->setSamplerUniform(0);
 }
 

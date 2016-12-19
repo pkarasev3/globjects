@@ -17,10 +17,12 @@ namespace globjects
 
 class AbstractStringSource;
 
-class GLOBJECTS_API NamedString : protected ChangeListener, std::enable_shared_from_this<NamedString>
+class GLOBJECTS_API NamedString : public ChangeListener<SharedObject>
 {
 public:
     virtual ~NamedString();
+
+    NamedString(const std::string & name, std::shared_ptr<AbstractStringSource> source, gl::GLenum type);
 
     static std::shared_ptr<NamedString> create(const std::string & name, std::shared_ptr<AbstractStringSource> string);
     static std::shared_ptr<NamedString> create(const std::string & name, const std::string & string);
@@ -37,9 +39,11 @@ public:
 
     gl::GLint getParameter(gl::GLenum pname) const;
 
-    virtual void notifyChanged(const Changeable * changeable) override;
+    virtual void notifyChanged(const AbstractChangeable * changeable) override;
 
 protected:
+    virtual void onInitialize() override;
+
     static bool hasNativeSupport();
 
     static std::shared_ptr<NamedString> create(const std::string & name, std::shared_ptr<AbstractStringSource> string, gl::GLenum type);
@@ -50,8 +54,6 @@ protected:
 
     void createNamedString();
     void deleteNamedString();
-
-    NamedString(const std::string & name, std::shared_ptr<AbstractStringSource> source, gl::GLenum type);
 
     void registerNamedString();
     void deregisterNamedString();

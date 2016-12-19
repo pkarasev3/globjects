@@ -67,7 +67,7 @@ std::shared_ptr<AbstractStringSource> IncludeProcessor::resolveIncludes(const Ab
 
 std::shared_ptr<CompositeStringSource> IncludeProcessor::processComposite(const AbstractStringSource* source)
 {
-    std::shared_ptr<CompositeStringSource> composite(new CompositeStringSource());
+    std::shared_ptr<CompositeStringSource> composite(create_shared<CompositeStringSource>());
 
     for (const auto & innerSource : source->flatten())
     {
@@ -79,7 +79,7 @@ std::shared_ptr<CompositeStringSource> IncludeProcessor::processComposite(const 
 
 std::shared_ptr<CompositeStringSource> IncludeProcessor::process(const AbstractStringSource* source)
 {
-    std::shared_ptr<CompositeStringSource> compositeSource(new CompositeStringSource());
+    std::shared_ptr<CompositeStringSource> compositeSource(create_shared<CompositeStringSource>());
 
     std::istringstream sourcestream(source->string());
     std::stringstream destinationstream;
@@ -154,7 +154,7 @@ std::shared_ptr<CompositeStringSource> IncludeProcessor::process(const AbstractS
 
     if (!destinationstream.str().empty())
     {
-        compositeSource->appendSource(std::shared_ptr<AbstractStringSource>(new StaticStringSource(destinationstream.str())));
+        compositeSource->appendSource(create_shared<StaticStringSource>(destinationstream.str()));
     }
 
     return compositeSource;
@@ -208,7 +208,7 @@ void IncludeProcessor::processInclude(std::string & include, CompositeStringSour
     }
 
     m_includes.insert(include);
-    compositeSource->appendSource(std::shared_ptr<AbstractStringSource>(new StaticStringSource(destinationstream.str())));
+    compositeSource->appendSource(create_shared<StaticStringSource>(destinationstream.str()));
 
     std::shared_ptr<NamedString> namedString = nullptr;
     if (startsWith(include, '/'))

@@ -2,6 +2,9 @@
 #pragma once
 
 
+#include <memory>
+
+
 namespace globjects
 {
 
@@ -17,7 +20,7 @@ protected:
     virtual ~Singleton();
 
 protected:
-    static T * s_instance;
+    static std::unique_ptr<T> s_instance;
 };
 
 

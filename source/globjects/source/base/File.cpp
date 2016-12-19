@@ -17,12 +17,16 @@ File::File(const std::string & filePath, bool binary)
 , m_binary(binary)
 , m_valid(false)
 {
-    FileRegistry::registerFile(this);
 }
 
 File::~File()
 {
     FileRegistry::deregisterFile(this);
+}
+
+void File::onInitialize()
+{
+    FileRegistry::registerFile(this);
 }
 
 std::string File::string() const

@@ -37,6 +37,11 @@ Uniform<T>::~Uniform()
 {
 }
 
+template <typename T>
+void Uniform<T>::onInitialize()
+{
+}
+
 template<typename T>
 const T & Uniform<T>::value() const
 {

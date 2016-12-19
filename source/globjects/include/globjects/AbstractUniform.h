@@ -13,6 +13,7 @@
 #include <globjects/globjects_api.h>
 
 #include <globjects/LocationIdentity.h>
+#include <globjects/base/SharedObject.h>
 
 
 namespace globjects
@@ -30,7 +31,7 @@ template<typename T> class Uniform;
  * \see Uniform
  * \see Program
  */
-class GLOBJECTS_API AbstractUniform
+class GLOBJECTS_API AbstractUniform : public SharedObject
 {
 	friend class Program; ///< Programs (de)register themselves.
 

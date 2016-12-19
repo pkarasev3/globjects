@@ -34,7 +34,7 @@ std::shared_ptr<NamedString> NamedString::create(const std::string & name, std::
         return std::shared_ptr<NamedString>(nullptr);
     }
 
-    return std::shared_ptr<NamedString>(new NamedString(name, source, type));
+    return create_shared<NamedString>(name, source, type);
 }
 
 std::shared_ptr<NamedString> NamedString::create(const std::string & name, const std::string & string, const GLenum type)
@@ -44,7 +44,7 @@ std::shared_ptr<NamedString> NamedString::create(const std::string & name, const
         return std::shared_ptr<NamedString>(nullptr);
     }
 
-    return std::shared_ptr<NamedString>(new NamedString(name, std::shared_ptr<AbstractStringSource>(new StaticStringSource(string)), type));
+    return create_shared<NamedString>(name, create_shared<StaticStringSource>(string), type);
 }
 
 NamedString::NamedString(const std::string & name, std::shared_ptr<AbstractStringSource> source, const GLenum type)
@@ -52,18 +52,22 @@ NamedString::NamedString(const std::string & name, std::shared_ptr<AbstractStrin
 , m_source(source)
 , m_type(type)
 {
-    createNamedString();
-    registerNamedString();
-
-    m_source->registerListener(ChangeListener::shared_from_this());
 }
 
 NamedString::~NamedString()
 {
-    m_source->deregisterListener(ChangeListener::shared_from_this());
+    m_source->deregisterListener(shared_from_this<AbstractChangeListener>());
 
     deregisterNamedString();
     deleteNamedString();
+}
+
+void NamedString::onInitialize()
+{
+    createNamedString();
+    registerNamedString();
+
+    m_source->registerListener(shared_from_this<AbstractChangeListener>());
 }
 
 void NamedString::createNamedString()
@@ -86,12 +90,12 @@ void NamedString::deleteNamedString()
 
 void NamedString::registerNamedString()
 {
-    NamedStringRegistry::current().registerNamedString(std::enable_shared_from_this<NamedString>::shared_from_this());
+    NamedStringRegistry::current().registerNamedString(shared_from_this<NamedString>());
 }
 
 void NamedString::deregisterNamedString()
 {
-    NamedStringRegistry::current().deregisterNamedString(std::enable_shared_from_this<NamedString>::shared_from_this());
+    NamedStringRegistry::current().deregisterNamedString(shared_from_this<NamedString>());
 }
 
 bool NamedString::isNamedString(const std::string & name)
@@ -184,7 +188,7 @@ void NamedString::updateString()
     createNamedString();
 }
 
-void NamedString::notifyChanged(const Changeable *)
+void NamedString::notifyChanged(const AbstractChangeable *)
 {
     updateString();
 }

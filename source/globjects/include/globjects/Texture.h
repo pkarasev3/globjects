@@ -50,6 +50,8 @@ public:
 
     Texture();
     Texture(gl::GLenum target);
+    Texture(std::unique_ptr<IDResource> && resource, gl::GLenum target);
+
     virtual ~Texture();
 
     static std::shared_ptr<Texture> fromId(gl::GLuint id, gl::GLenum  target);
@@ -148,9 +150,6 @@ public:
     void pageCommitment(gl::GLint level, const glm::ivec3 & offset, const glm::ivec3 & size, gl::GLboolean commit) const;
 
     virtual gl::GLenum objectType() const override;
-
-protected:
-    Texture(std::unique_ptr<IDResource> && resource, gl::GLenum target);
 
 protected:
     gl::GLenum m_target;

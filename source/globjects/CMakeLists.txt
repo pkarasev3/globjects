@@ -77,16 +77,20 @@ set(headers
 	${include_path}/Uniform.inl
 	${include_path}/VertexArray.h
 	${include_path}/VertexAttributeBinding.h
-	
+
+	${include_path}/base/AbstractChangeable.h
+	${include_path}/base/AbstractChangeListener.h
 	${include_path}/base/AbstractStringSource.h
 	${include_path}/base/AbstractFunctionCall.h
 	${include_path}/base/AbstractLogHandler.h
 	${include_path}/base/baselogging.h
 	${include_path}/base/Changeable.h
+	${include_path}/base/Changeable.inl
 	${include_path}/base/ChangeListener.h
+	${include_path}/base/ChangeListener.inl
 	${include_path}/base/CompositeStringSource.h
 	${include_path}/base/ConsoleLogger.h
-        ${include_path}/base/File.h
+    ${include_path}/base/File.h
 	${include_path}/base/FunctionCall.h
 	${include_path}/base/FunctionCall.inl
 	${include_path}/base/LogMessageBuilder.h
@@ -98,6 +102,10 @@ set(headers
 	${include_path}/base/StaticStringSource.h
 	${include_path}/base/StringSourceDecorator.h
 	${include_path}/base/StringTemplate.h
+	${include_path}/base/SharedObject.h
+	${include_path}/base/SharedObject.inl
+	${include_path}/base/make_shared.h
+	${include_path}/base/make_shared.inl
 )
 
 set(sources
@@ -112,15 +120,13 @@ set(sources
 	${source_path}/glbindinglogging.cpp
 	${source_path}/glmlogging.cpp
 	${source_path}/globjects.cpp
-	
+
 	${source_path}/container_helpers.h
 	${source_path}/container_helpers.inl
-	
+
 	${source_path}/base/AbstractFunctionCall.cpp
 	${source_path}/base/AbstractStringSource.cpp
 	${source_path}/base/baselogging.cpp
-	${source_path}/base/Changeable.cpp
-	${source_path}/base/ChangeListener.cpp
 	${source_path}/base/CompositeStringSource.cpp
 	${source_path}/base/ConsoleLogger.cpp
 	${source_path}/base/File.cpp
@@ -131,6 +137,7 @@ set(sources
 	${source_path}/base/StaticStringSource.cpp
 	${source_path}/base/StringSourceDecorator.cpp
 	${source_path}/base/StringTemplate.cpp
+	${source_path}/base/SharedObject.cpp
 
 	${source_path}/implementations/AbstractBufferImplementation.cpp
 	${source_path}/implementations/AbstractBufferImplementation.h

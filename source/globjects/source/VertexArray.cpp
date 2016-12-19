@@ -54,7 +54,7 @@ void VertexArray::hintAttributeImplementation(const AttributeImplementation impl
 
 std::shared_ptr<VertexArray> VertexArray::fromId(const GLuint id)
 {
-    return std::shared_ptr<VertexArray>(new VertexArray(std::unique_ptr<IDResource>(new ExternalResource(id))));
+    return create_shared<VertexArray>(std::unique_ptr<IDResource>(new ExternalResource(id)));
 }
 
 std::shared_ptr<VertexArray> VertexArray::defaultVAO()
@@ -87,7 +87,7 @@ VertexAttributeBinding * VertexArray::binding(const GLuint bindingIndex)
 
     if (it == m_bindings.end())
     {
-        const auto insertedIt = m_bindings.emplace(bindingIndex, std::unique_ptr<VertexAttributeBinding>(new VertexAttributeBinding(shared_from_this(), bindingIndex)));
+        const auto insertedIt = m_bindings.emplace(bindingIndex, std::unique_ptr<VertexAttributeBinding>(new VertexAttributeBinding(shared_from_this<VertexArray>(), bindingIndex)));
 
         return insertedIt.first->second.get();
     }

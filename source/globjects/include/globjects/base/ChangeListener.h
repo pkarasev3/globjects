@@ -6,12 +6,13 @@
 
 #include <globjects/globjects_api.h>
 
+#include <globjects/base/AbstractChangeListener.h>
+#include <globjects/base/SharedObject.h>
+
 
 namespace globjects
 {
 
-
-class Changeable;
 
 /** \brief Allows listening to any Changeable.
     
@@ -20,20 +21,26 @@ class Changeable;
     
     \see Changeable
  */
-class GLOBJECTS_API ChangeListener : public std::enable_shared_from_this<ChangeListener>
+template <typename Superclass>
+class ChangeListener : public AbstractChangeListener, public Superclass
 {
-    friend class Changeable;
 public:
+    template <typename... Args>
+    ChangeListener(Args && ... args);
+
     virtual ~ChangeListener();
 
-    virtual void notifyChanged(const Changeable * sender);
+    virtual void notifyChanged(const AbstractChangeable * sender);
 
 private:
-    std::set<std::weak_ptr<Changeable>, std::owner_less<std::weak_ptr<Changeable>>> m_subjects;
+    std::set<std::weak_ptr<AbstractChangeable>, std::owner_less<std::weak_ptr<AbstractChangeable>>> m_subjects;
 
-    void addSubject(std::weak_ptr<Changeable> subject);
-    void removeSubject(std::weak_ptr<Changeable> subject);
+    void addSubject(std::weak_ptr<AbstractChangeable> subject);
+    void removeSubject(std::weak_ptr<AbstractChangeable> subject);
 };
 
 
 } // namespace globjects
+
+
+#include <globjects/base/ChangeListener.inl>

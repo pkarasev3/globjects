@@ -17,7 +17,7 @@ namespace globjects
 
 class Program;
 
-class GLOBJECTS_API ProgramPipeline : public Object, protected ChangeListener, public std::enable_shared_from_this<ProgramPipeline>
+class GLOBJECTS_API ProgramPipeline : public ChangeListener<Object>
 {
 public:
     ProgramPipeline();
@@ -40,7 +40,7 @@ public:
     std::string infoLog() const;
     gl::GLint get(gl::GLenum pname) const;
 
-    virtual void notifyChanged(const Changeable * sender) override;
+    virtual void notifyChanged(const AbstractChangeable * sender) override;
 
     virtual gl::GLenum objectType() const override;
 

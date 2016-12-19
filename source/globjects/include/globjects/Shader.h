@@ -36,7 +36,7 @@ class AbstractStringSource;
     \see ChangeListener
     \see Changeable
  */
-class GLOBJECTS_API Shader : public Object, protected ChangeListener, public Changeable
+class GLOBJECTS_API Shader : public Changeable<ChangeListener<Object>>
 {
     friend class Program;
 
@@ -93,7 +93,7 @@ public:
     static std::string typeString(gl::GLenum type);
 
 protected:
-    virtual void notifyChanged(const Changeable * changeable) override;
+    virtual void notifyChanged(const AbstractChangeable * changeable) override;
 
 protected:
     std::string shaderString() const;

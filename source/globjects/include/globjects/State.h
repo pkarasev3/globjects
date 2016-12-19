@@ -9,6 +9,7 @@
 #include <globjects/globjects_api.h>
 #include <globjects/AbstractState.h>
 #include <globjects/StateSetting.h>
+#include <globjects/base/SharedObject.h>
 
 
 namespace globjects
@@ -18,7 +19,7 @@ namespace globjects
 class StateSetting;
 class Capability;
 
-class GLOBJECTS_API State : public AbstractState
+class GLOBJECTS_API State : public SharedObject, public AbstractState
 {
 public:
     enum Mode
@@ -60,6 +61,8 @@ protected:
     void addCapability(Capability * capability);
     Capability * getCapability(gl::GLenum capability);
     const Capability * getCapability(gl::GLenum capability) const;
+
+    virtual void onInitialize() override;
 
 protected:
     Mode m_mode;

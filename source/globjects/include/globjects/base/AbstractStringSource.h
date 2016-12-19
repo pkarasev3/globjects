@@ -22,7 +22,7 @@ class CompositeStringSource;
  *
  * \see Shader
  */
-class GLOBJECTS_API AbstractStringSource : public Changeable, std::enable_shared_from_this<AbstractStringSource>
+class GLOBJECTS_API AbstractStringSource : public Changeable<SharedObject>
 {
 public:
     virtual std::string string() const = 0;

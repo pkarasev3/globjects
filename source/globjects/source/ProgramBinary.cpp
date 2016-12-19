@@ -12,7 +12,7 @@ namespace globjects
 
 
 ProgramBinary::ProgramBinary(const GLenum binaryFormat, const std::vector<char> & binaryData)
-: ProgramBinary(binaryFormat, std::shared_ptr<AbstractStringSource>(new StaticStringSource(binaryData.data(), binaryData.size())))
+: ProgramBinary(binaryFormat, create_shared<StaticStringSource>(binaryData.data(), binaryData.size()))
 {
 }
 
@@ -21,17 +21,21 @@ ProgramBinary::ProgramBinary(const GLenum binaryFormat, std::shared_ptr<Abstract
 , m_dataSource(dataSource)
 , m_valid(false)
 {
-    if (m_dataSource)
-    {
-        m_dataSource->registerListener(ChangeListener::shared_from_this());
-    }
 }
 
 ProgramBinary::~ProgramBinary()
 {
     if (m_dataSource)
     {
-        m_dataSource->deregisterListener(ChangeListener::shared_from_this());
+        m_dataSource->deregisterListener(shared_from_this<ChangeListener>());
+    }
+}
+
+void ProgramBinary::onInitialize()
+{
+    if (m_dataSource)
+    {
+        m_dataSource->registerListener(shared_from_this<ChangeListener>());
     }
 }
 
@@ -54,7 +58,7 @@ GLsizei ProgramBinary::length() const
     return static_cast<GLsizei>(m_binaryData.size());
 }
 
-void ProgramBinary::notifyChanged(const Changeable *)
+void ProgramBinary::notifyChanged(const AbstractChangeable *)
 {
     m_valid = false;
     changed();

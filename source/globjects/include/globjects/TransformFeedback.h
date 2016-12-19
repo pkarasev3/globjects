@@ -26,8 +26,8 @@ class Program;
     \code{.cpp}
 
         Program* program = createProgramIncludingShaders();
-        TransformFeedback* transformFeedback = new TransformFeedback();
-        Buffer* buffer = new Buffer(gl::GL_ARRAY_BUFFER);
+        auto transformFeedback = create_shared<TransformFeedback>();
+        auto buffer = create_shared<Buffer>(gl::GL_ARRAY_BUFFER);
     
         transformFeedback->setVaryings(program, Array<const char*>{ "vertex_out" }, gl::GL_INTERLEAVED_ATTRIBS);
     

@@ -31,7 +31,7 @@ namespace globjects
     An example time measurement:
     \code{.cpp}
 
-        Query * query = new Query(gl::GL_TIME_ELAPSED);
+        auto query = create_shared<Query>(gl::GL_TIME_ELAPSED);
         query->begin();
     
         // more GL calls
@@ -66,6 +66,8 @@ class GLOBJECTS_API Query : public Object
 {
 public:
     Query();
+    Query(std::unique_ptr<IDResource> && resource);
+
     virtual ~Query();
 
     static std::shared_ptr<Query> fromId(gl::GLuint id);
@@ -109,9 +111,6 @@ public:
     virtual gl::GLenum objectType() const override;
 
 protected:
-
-    Query(std::unique_ptr<IDResource> && resource);
-
     void counter(gl::GLenum target) const;
 };
 

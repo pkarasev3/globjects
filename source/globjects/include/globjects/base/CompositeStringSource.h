@@ -15,7 +15,7 @@ namespace globjects
 {
 
 
-class GLOBJECTS_API CompositeStringSource : public AbstractStringSource, protected ChangeListener
+class GLOBJECTS_API CompositeStringSource : public ChangeListener<AbstractStringSource>
 {
 public:
     CompositeStringSource();
@@ -31,9 +31,10 @@ public:
 
     virtual std::string shortInfo() const override;
 protected:
-    virtual void notifyChanged(const Changeable * changeable) override;
+    virtual void notifyChanged(const AbstractChangeable * changeable) override;
 
     void update() const;
+    virtual void onInitialize() override;
 
 protected:
     std::vector<std::shared_ptr<AbstractStringSource>> m_sources;

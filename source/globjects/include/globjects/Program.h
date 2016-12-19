@@ -47,7 +47,7 @@ class Uniform;
     
     \code{.cpp}
 
-        Program * program = new Program();
+        auto program = create_shared<Program>();
         program->attach(
             Shader::fromString(gl::GL_VERTEX_SHADER, "...")
           , Shader::fromString(gl::GL_FRAGMENT_SHADER, "...")
@@ -63,7 +63,7 @@ class Uniform;
     Example code for using a program as compute program
     \code{.cpp}
 
-        Program * program = new Program();
+        auto program = create_shared<Program>();
         program->attach(Shader::fromString(gl::GL_COMPUTE_SHADER, "..."));
     
         program->dispatchCompute(128, 1, 1);
@@ -75,7 +75,7 @@ class Uniform;
     \see http://www.opengl.org/wiki/Program_Object
     \see Shader
  */
-class GLOBJECTS_API Program : public Object, protected ChangeListener, public Changeable, public std::enable_shared_from_this<Program>
+class GLOBJECTS_API Program : public Changeable<ChangeListener<Object>>
 {
     friend class UniformBlock;
     friend class ProgramBinaryImplementation_GetProgramBinaryARB;
@@ -211,7 +211,7 @@ protected:
 
 	// ChangeListener Interface
 
-    virtual void notifyChanged(const Changeable * sender) override;
+    virtual void notifyChanged(const AbstractChangeable * sender) override;
 
 protected:
 	static gl::GLuint createProgram();
@@ -231,7 +231,7 @@ protected:
     std::shared_ptr<ProgramBinary> m_binary;
 
     std::unordered_map<LocationIdentity, std::shared_ptr<AbstractUniform>> m_uniforms;
-    std::unordered_map<LocationIdentity, UniformBlock> m_uniformBlocks;
+    std::unordered_map<LocationIdentity, std::shared_ptr<UniformBlock>> m_uniformBlocks;
 
     mutable bool m_linked;
     mutable bool m_dirty;

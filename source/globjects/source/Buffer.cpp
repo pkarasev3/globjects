@@ -56,9 +56,9 @@ Buffer::Buffer(std::unique_ptr<IDResource> && resource)
 {
 }
 
-Buffer * Buffer::fromId(const GLuint id)
+std::shared_ptr<Buffer> Buffer::fromId(const GLuint id)
 {
-    return new Buffer(std::unique_ptr<IDResource>(new ExternalResource(id)));
+    return create_shared<Buffer>(std::unique_ptr<IDResource>(new ExternalResource(id)));
 }
 
 Buffer::~Buffer()

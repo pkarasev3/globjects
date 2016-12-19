@@ -36,6 +36,10 @@ Object::Object(std::unique_ptr<IDResource> && resource)
 : m_resource(std::move(resource))
 , m_objectLabelState(nullptr)
 {
+}
+
+void Object::onInitialize()
+{
     ObjectRegistry::current().registerObject(this);
 }
 

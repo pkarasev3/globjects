@@ -49,7 +49,7 @@ void Framebuffer::hintBindlessImplementation(const BindlessImplementation impl)
 }
 
 Framebuffer::Framebuffer()
-    : Object(std::unique_ptr<IDResource>(new FrameBufferObjectResource))
+: Object(std::unique_ptr<IDResource>(new FrameBufferObjectResource))
 {
 }
 
@@ -60,7 +60,7 @@ Framebuffer::Framebuffer(std::unique_ptr<IDResource> && resource)
 
 std::shared_ptr<Framebuffer> Framebuffer::fromId(const GLuint id)
 {
-    return std::shared_ptr<Framebuffer>(new Framebuffer(std::unique_ptr<IDResource>(new ExternalResource(id))));
+    return create_shared<Framebuffer>(std::unique_ptr<IDResource>(new ExternalResource(id)));
 }
 
 std::shared_ptr<Framebuffer> Framebuffer::defaultFBO()
@@ -111,21 +111,21 @@ void Framebuffer::attachTexture(const GLenum attachment, std::shared_ptr<Texture
 {
     implementation().attachTexture(this, attachment, texture.get(), level);
 
-    addAttachment(std::unique_ptr<FramebufferAttachment>(new AttachedTexture(shared_from_this(), attachment, texture, level)));
+    addAttachment(std::unique_ptr<FramebufferAttachment>(new AttachedTexture(shared_from_this<Framebuffer>(), attachment, texture, level)));
 }
 
 void Framebuffer::attachTextureLayer(const GLenum attachment, std::shared_ptr<Texture> texture, const GLint level, const GLint layer)
 {
     implementation().attachTextureLayer(this, attachment, texture.get(), level, layer);
 
-    addAttachment(std::unique_ptr<FramebufferAttachment>(new AttachedTexture(shared_from_this(), attachment, texture, level, layer)));
+    addAttachment(std::unique_ptr<FramebufferAttachment>(new AttachedTexture(shared_from_this<Framebuffer>(), attachment, texture, level, layer)));
 }
 
 void Framebuffer::attachRenderBuffer(const GLenum attachment, std::shared_ptr<Renderbuffer> renderBuffer)
 {
     implementation().attachRenderBuffer(this, attachment, renderBuffer.get());
 
-    addAttachment(std::unique_ptr<FramebufferAttachment>(new AttachedRenderbuffer(shared_from_this(), attachment, renderBuffer)));
+    addAttachment(std::unique_ptr<FramebufferAttachment>(new AttachedRenderbuffer(shared_from_this<Framebuffer>(), attachment, renderBuffer)));
 }
 
 bool Framebuffer::detach(const GLenum attachment)

@@ -19,6 +19,8 @@ class GLOBJECTS_API Sampler : public Object
 {
 public:
     Sampler();
+    Sampler(std::unique_ptr<IDResource> && resource);
+
     virtual ~Sampler();
 
     static std::shared_ptr<Sampler> fromId(gl::GLuint id);
@@ -36,9 +38,6 @@ public:
     gl::GLfloat getParameterf(gl::GLenum pname) const;
 
     virtual gl::GLenum objectType() const override;
-
-protected:
-    Sampler(std::unique_ptr<IDResource> && resource);
 };
 
 

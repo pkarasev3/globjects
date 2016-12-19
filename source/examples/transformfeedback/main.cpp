@@ -51,14 +51,14 @@ namespace
 
 void initialize()
 {
-    g_shaderProgram = std::shared_ptr<globjects::Program>(new globjects::Program());
+    g_shaderProgram = globjects::create_shared<globjects::Program>();
     
     const auto dataPath = common::retrieveDataPath("globjects", "dataPath");
     g_shaderProgram->attach(
         globjects::Shader::fromFile(GL_VERTEX_SHADER,   dataPath + "transformfeedback/simple.vert")
       , globjects::Shader::fromFile(GL_FRAGMENT_SHADER, dataPath + "transformfeedback/simple.frag"));
 
-    g_transformFeedbackProgram = std::shared_ptr<globjects::Program>(new globjects::Program());
+    g_transformFeedbackProgram = globjects::create_shared<globjects::Program>();
     g_transformFeedbackProgram->attach(
         globjects::Shader::fromFile(GL_VERTEX_SHADER, dataPath + "transformfeedback/transformfeedback.vert"));
 
@@ -85,14 +85,14 @@ void initialize()
       , { 0, 0, 1, 1 }
       , { 0, 1, 0, 1 } });
 
-    g_vertexBuffer1 = std::shared_ptr<globjects::Buffer>(new globjects::Buffer());
+    g_vertexBuffer1 = globjects::create_shared<globjects::Buffer>();
     g_vertexBuffer1->setData(vertexArray, GL_STATIC_DRAW);
-    g_vertexBuffer2 = std::shared_ptr<globjects::Buffer>(new globjects::Buffer());
+    g_vertexBuffer2 = globjects::create_shared<globjects::Buffer>();
     g_vertexBuffer2->setData(vertexArray, GL_STATIC_DRAW);
-    g_colorBuffer = std::shared_ptr<globjects::Buffer>(new globjects::Buffer());
+    g_colorBuffer = globjects::create_shared<globjects::Buffer>();
     g_colorBuffer->setData(colorArray, GL_STATIC_DRAW);
 
-    g_vao = std::shared_ptr<globjects::VertexArray>(new globjects::VertexArray());
+    g_vao = globjects::create_shared<globjects::VertexArray>();
 
     g_vao->binding(0)->setAttribute(0);
     g_vao->binding(0)->setFormat(4, GL_FLOAT);

@@ -67,7 +67,7 @@ Texture::Texture(std::unique_ptr<IDResource> && resource, const GLenum target)
 
 std::shared_ptr<Texture> Texture::fromId(const GLuint id, const GLenum target)
 {
-    return std::shared_ptr<Texture>(new Texture(std::unique_ptr<IDResource>(new ExternalResource(id)), target));
+    return create_shared<Texture>(std::unique_ptr<IDResource>(new ExternalResource(id)), target);
 }
 
 Texture::~Texture()
@@ -81,7 +81,7 @@ std::shared_ptr<Texture> Texture::createDefault()
 
 std::shared_ptr<Texture> Texture::createDefault(const GLenum target)
 {
-    std::shared_ptr<Texture> texture = std::shared_ptr<Texture>(new Texture(target));
+    std::shared_ptr<Texture> texture = create_shared<Texture>(target);
 
     texture->setParameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     texture->setParameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);

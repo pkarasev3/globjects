@@ -42,7 +42,7 @@ class Buffer;
     \see TextureAttachment
     \see RenderBufferAttachment
  */
-class GLOBJECTS_API Framebuffer : public Object, public std::enable_shared_from_this<Framebuffer>
+class GLOBJECTS_API Framebuffer : public Object
 {
 public:
     enum class BindlessImplementation
@@ -56,6 +56,8 @@ public:
 
 public:
     Framebuffer();
+    Framebuffer(std::unique_ptr<IDResource> && resource);
+
     virtual ~Framebuffer();
 
     static std::shared_ptr<Framebuffer> fromId(gl::GLuint id);
@@ -127,8 +129,6 @@ public:
     virtual gl::GLenum objectType() const override;
 
 protected:
-    Framebuffer(std::unique_ptr<IDResource> && resource);
-
     void addAttachment(std::unique_ptr<FramebufferAttachment> && attachment);
 
     static void blit(gl::GLint srcX0, gl::GLint srcY0, gl::GLint srcX1, gl::GLint srcY1, gl::GLint destX0, gl::GLint destY0, gl::GLint destX1, gl::GLint destY1, gl::ClearBufferMask mask, gl::GLenum filter);

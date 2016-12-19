@@ -13,7 +13,7 @@ namespace globjects
 {
 
 
-class GLOBJECTS_API StringSourceDecorator : public globjects::AbstractStringSource, protected globjects::ChangeListener
+class GLOBJECTS_API StringSourceDecorator : public ChangeListener<AbstractStringSource>
 {
 public:
     StringSourceDecorator(std::shared_ptr<globjects::AbstractStringSource> source);
@@ -22,7 +22,7 @@ public:
 protected:
     virtual ~StringSourceDecorator();
 
-    virtual void notifyChanged(const Changeable * changeable) override;
+    virtual void notifyChanged(const AbstractChangeable * changeable) override;
 
 protected:
     std::shared_ptr<globjects::AbstractStringSource> m_internal;

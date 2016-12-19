@@ -50,25 +50,25 @@ namespace
 void initialize()
 {
     // Initialize OpenGL objects
-    g_defaultPointSizeState = std::shared_ptr<globjects::State>(new globjects::State());
+    g_defaultPointSizeState = globjects::create_shared<globjects::State>();
     g_defaultPointSizeState->pointSize(globjects::getFloat(GL_POINT_SIZE));
-    g_thinnestPointSizeState = std::shared_ptr<globjects::State>(new globjects::State());
+    g_thinnestPointSizeState = globjects::create_shared<globjects::State>();
     g_thinnestPointSizeState->pointSize(2.0f);
-    g_thinPointSizeState = std::shared_ptr<globjects::State>(new globjects::State());
+    g_thinPointSizeState = globjects::create_shared<globjects::State>();
     g_thinPointSizeState->pointSize(5.0f);
-    g_normalPointSizeState = std::shared_ptr<globjects::State>(new globjects::State());
+    g_normalPointSizeState = globjects::create_shared<globjects::State>();
     g_normalPointSizeState->pointSize(10.0f);
-    g_thickPointSizeState = std::shared_ptr<globjects::State>(new globjects::State());
+    g_thickPointSizeState = globjects::create_shared<globjects::State>();
     g_thickPointSizeState->pointSize(20.0f);
-    g_disableRasterizerState = std::shared_ptr<globjects::State>(new globjects::State());
+    g_disableRasterizerState = globjects::create_shared<globjects::State>();
     g_disableRasterizerState->enable(GL_RASTERIZER_DISCARD);
-    g_enableRasterizerState = std::shared_ptr<globjects::State>(new globjects::State());
+    g_enableRasterizerState = globjects::create_shared<globjects::State>();
     g_enableRasterizerState->disable(GL_RASTERIZER_DISCARD);
 
-    g_vao = std::shared_ptr<globjects::VertexArray>(new globjects::VertexArray());
-    g_buffer = std::shared_ptr<globjects::Buffer>(new globjects::Buffer());
+    g_vao = globjects::create_shared<globjects::VertexArray>();
+    g_buffer = globjects::create_shared<globjects::Buffer>();
 
-    g_shaderProgram = std::shared_ptr<globjects::Program>(new globjects::Program());
+    g_shaderProgram = globjects::create_shared<globjects::Program>();
 
     const auto dataPath = common::retrieveDataPath("globjects", "dataPath");
     g_shaderProgram->attach(

@@ -20,7 +20,7 @@ std::shared_ptr<Sync> Sync::fence(const GLenum condition)
 
 std::shared_ptr<Sync> Sync::fence(const GLenum condition, const UnusedMask flags)
 {
-    return std::shared_ptr<Sync>(new Sync(fenceSync(condition, flags)));
+    return create_shared<Sync>(fenceSync(condition, flags));
 }
 
 Sync::Sync(GLsync sync)
@@ -32,6 +32,10 @@ Sync::Sync(GLsync sync)
 Sync::~Sync()
 {
     glDeleteSync(m_sync);
+}
+
+void Sync::onInitialize()
+{
 }
 
 GLsync Sync::fenceSync(const GLenum condition, const UnusedMask flags)

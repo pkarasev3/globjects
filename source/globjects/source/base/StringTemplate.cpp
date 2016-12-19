@@ -41,6 +41,10 @@ StringTemplate::~StringTemplate()
 {
 }
 
+void StringTemplate::onInitialize()
+{
+}
+
 std::string StringTemplate::string() const
 {
     if (!m_modifiedSourceValid)

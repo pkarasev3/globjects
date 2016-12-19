@@ -19,6 +19,10 @@ class NamedStringRegistry;
 class Registry
 {
 public:
+    Registry();
+    Registry(Registry * sharedRegistry);
+    ~Registry();
+
     static void registerContext(glbinding::ContextHandle contextId);
     static void registerContext(glbinding::ContextHandle contextId, glbinding::ContextHandle sharedContextId);
     static void deregisterContext(glbinding::ContextHandle contextId);
@@ -37,16 +41,12 @@ public:
     bool isInitialized() const;
 
 private:
-    Registry();
-    Registry(Registry * sharedRegistry);
-    ~Registry();
-
     void initialize();
 
     static bool isContextRegistered(glbinding::ContextHandle contextId);
     static void setCurrentRegistry(glbinding::ContextHandle contextId);
 
-    static std::unordered_map<glbinding::ContextHandle, Registry *> s_registries;
+    static std::unordered_map<glbinding::ContextHandle, std::unique_ptr<Registry>> s_registries;
 
 private:
     bool m_initialized;

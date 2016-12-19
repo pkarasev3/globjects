@@ -28,7 +28,7 @@ Query::Query(std::unique_ptr<IDResource> && resource)
 
 std::shared_ptr<Query> Query::fromId(const GLuint id)
 {
-    return std::shared_ptr<Query>(new Query(std::unique_ptr<IDResource>(new ExternalResource(id))));
+    return create_shared<Query>(std::unique_ptr<IDResource>(new ExternalResource(id)));
 }
 
 Query::~Query()
@@ -50,7 +50,7 @@ std::shared_ptr<Query> Query::current(const GLenum target)
 
 std::shared_ptr<Query> Query::timestamp()
 {
-    std::shared_ptr<Query> query = std::shared_ptr<Query>(new Query());
+    std::shared_ptr<Query> query = create_shared<Query>();
     query->counter(GL_TIMESTAMP);
 
     return query;

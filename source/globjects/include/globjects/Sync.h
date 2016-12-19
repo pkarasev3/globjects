@@ -6,19 +6,21 @@
 #include <glbinding/gl/types.h>
 
 #include <globjects/globjects_api.h>
+#include <globjects/base/SharedObject.h>
 
 
 namespace globjects
 {
 
 
-class GLOBJECTS_API Sync
+class GLOBJECTS_API Sync : public SharedObject
 {
     friend class AbstractObjectNameImplementation;
 
 public:
     static std::shared_ptr<Sync> fence(gl::GLenum condition);
 
+    Sync(gl::GLsync sync);
     virtual ~Sync();
 
     gl::GLenum clientWait(gl::SyncObjectMask flags, gl::GLuint64 timeout);
@@ -30,7 +32,7 @@ public:
     gl::GLsync sync() const;
 
 protected:
-    Sync(gl::GLsync sync);
+    virtual void onInitialize() override;
 
     void wait(gl::UnusedMask flags, gl::GLuint64 timeout);
 

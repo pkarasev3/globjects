@@ -22,7 +22,7 @@ namespace globjects
  *
  * Simple usage of an Uniform:
  * \code{.cpp}
- * Uniform<float> * u = new Uniform<float>("u_ratio");
+ * auto u = create_shared<Uniform<float>>("u_ratio");
  * u->set(1.618f);
  *
  * program->addUniform(u);
@@ -48,6 +48,7 @@ public:
 
 protected:
     virtual void updateAt(std::weak_ptr<const Program> program, gl::GLint location) const override;
+    virtual void onInitialize() override;
 
 protected:
     T m_value; ///< The uniforms value, explictly required when relinking programs.

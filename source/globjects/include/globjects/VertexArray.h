@@ -17,7 +17,7 @@ namespace globjects
 class VertexAttributeBinding;
 
 // http://www.opengl.org/wiki/Vertex_Array_Object
-class GLOBJECTS_API VertexArray : public Object, public std::enable_shared_from_this<VertexArray>
+class GLOBJECTS_API VertexArray : public Object
 {
 public:
     enum class AttributeImplementation
@@ -31,6 +31,8 @@ public:
 
 public:
     VertexArray();
+    VertexArray(std::unique_ptr<IDResource> && resource);
+
     virtual ~VertexArray();
 
     static std::shared_ptr<VertexArray> fromId(gl::GLuint id);
@@ -99,9 +101,6 @@ public:
     void multiDrawElementsBaseVertex(gl::GLenum mode, gl::GLenum type, const std::vector<MultiDrawElementsBaseVertexRange> & ranges) const;
 
     virtual gl::GLenum objectType() const override;
-
-protected:
-    VertexArray(std::unique_ptr<IDResource> && resource);
 
 protected:
     std::map<gl::GLuint, std::unique_ptr<VertexAttributeBinding>> m_bindings;

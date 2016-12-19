@@ -31,6 +31,9 @@ public:
 
 protected:
     std::string m_string;
+
+protected:
+    virtual void onInitialize() override;
 };
 
 

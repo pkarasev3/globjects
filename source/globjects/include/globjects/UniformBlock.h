@@ -6,6 +6,7 @@
 
 #include <globjects/globjects_api.h>
 #include <globjects/LocationIdentity.h>
+#include <globjects/base/SharedObject.h>
 
 
 namespace globjects 
@@ -14,7 +15,7 @@ namespace globjects
 
 class Program;
 
-class GLOBJECTS_API UniformBlock
+class GLOBJECTS_API UniformBlock : public SharedObject
 {
     friend class Program;
 public:
@@ -40,6 +41,8 @@ protected:
 
     gl::GLuint blockIndex() const;
     void updateBinding() const;
+
+    virtual void onInitialize() override;
 };
 
 

@@ -1,7 +1,10 @@
 
 #pragma once
 
+
 #include <set>
+
+#include <globjects/base/Singleton.h>
 
 
 namespace globjects
@@ -10,7 +13,7 @@ namespace globjects
 
 class File;
 
-class FileRegistry
+class FileRegistry : public Singleton<FileRegistry>
 {
 public:
     static void registerFile(File * file);
@@ -18,11 +21,8 @@ public:
 
     static void reloadAll();
 protected:
-    FileRegistry();
-    virtual ~FileRegistry();
 
     std::set<File*> m_registeredFiles;
-    static FileRegistry* s_instance;
 };
 
 

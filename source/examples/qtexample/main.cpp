@@ -66,9 +66,9 @@ public:
         globjects::debug() << "Using global OS X shader replacement '#version 140' -> '#version 150'" << std::endl;
 #endif
 
-        m_cornerBuffer = std::shared_ptr<globjects::Buffer>(new globjects::Buffer());
-        m_program = std::shared_ptr<globjects::Program>(new globjects::Program());
-        m_vao = std::shared_ptr<globjects::VertexArray>(new globjects::VertexArray());
+        m_cornerBuffer = globjects::create_shared<globjects::Buffer>();
+        m_program = globjects::create_shared<globjects::Program>();
+        m_vao = globjects::create_shared<globjects::VertexArray>();
 
         const auto dataPath = common::retrieveDataPath("globjects", "dataPath");
         m_program->attach(

@@ -35,6 +35,8 @@ protected:
 
     void invalidate();
     std::string modifiedSource() const;
+
+    virtual void onInitialize() override;
 };
 
 

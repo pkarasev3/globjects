@@ -25,9 +25,13 @@ State::~State()
 {
 }
 
+void State::onInitialize()
+{
+}
+
 std::shared_ptr<State> State::currentState()
 {
-    std::shared_ptr<State> state(new State(DeferredMode));
+    std::shared_ptr<State> state = create_shared<State>(DeferredMode);
 
     std::vector<GLenum> capabilities = {
         GL_BLEND,

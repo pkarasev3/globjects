@@ -41,6 +41,7 @@ protected:
     mutable bool m_valid;
 
     void loadFileContent() const;
+    virtual void onInitialize() override;
 };
 
 
