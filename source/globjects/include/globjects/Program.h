@@ -81,6 +81,7 @@ class GLOBJECTS_API Program : public Changeable<ChangeListener<Object>>
     friend class ProgramBinaryImplementation_GetProgramBinaryARB;
     friend class ProgramBinaryImplementation_None;
 
+    using Super = Changeable<ChangeListener<Object>>;
 public:
     enum class BinaryImplementation
     {
@@ -208,6 +209,8 @@ protected:
     bool compileAttachedShaders() const;
     void updateUniforms() const;
     void updateUniformBlockBindings() const;
+
+    virtual void onInitialize() override;
 
 	// ChangeListener Interface
 

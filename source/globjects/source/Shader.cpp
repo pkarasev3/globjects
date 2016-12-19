@@ -49,35 +49,38 @@ std::map<std::string, std::string> Shader::s_globalReplacements;
 
 
 Shader::Shader(const GLenum type)
-: Changeable(std::unique_ptr<IDResource>(new ShaderResource(type)))
+: ChangeListener(std::unique_ptr<IDResource>(new ShaderResource(type)))
 , m_type(type)
 , m_compiled(false)
 , m_compilationFailed(false)
 {
 }
 
-Shader::Shader(const GLenum type, std::shared_ptr<AbstractStringSource> source, const IncludePaths & includePaths)
-: Shader(type)
-{
-    setIncludePaths(includePaths);
-    setSource(source);
-}
-
 std::shared_ptr<Shader> Shader::fromString(const GLenum type, const std::string & sourceString, const IncludePaths & includePaths)
 {
-    return create_shared<Shader>(type, create_shared<StaticStringSource>(sourceString), includePaths);
+    auto shader = create_shared<Shader>(type);
+
+    shader->setIncludePaths(includePaths);
+    shader->setSource(create_shared<StaticStringSource>(sourceString));
+
+    return shader;
 }
 
 std::shared_ptr<Shader> Shader::fromFile(const GLenum type, const std::string & filename, const IncludePaths & includePaths)
 {
-    return create_shared<Shader>(type, create_shared<File>(filename, false), includePaths);
+    auto shader = create_shared<Shader>(type);
+
+    shader->setIncludePaths(includePaths);
+    shader->setSource(create_shared<File>(filename, false));
+
+    return shader;
 }
 
 Shader::~Shader()
 {
 	if (m_source)
 	{
-        m_source->deregisterListener(shared_from_this<ChangeListener>());
+        m_source->deregisterListener(shared_this<ChangeListener>());
 	}
 }
 
@@ -112,7 +115,7 @@ void Shader::setSource(std::shared_ptr<AbstractStringSource> source)
         return;
 
 	if (m_source)
-        m_source->deregisterListener(shared_from_this<ChangeListener>());
+        m_source->deregisterListener(shared_this<ChangeListener>());
 
     if (!s_globalReplacements.empty())
     {
@@ -127,7 +130,7 @@ void Shader::setSource(std::shared_ptr<AbstractStringSource> source)
 	m_source = source;
 
 	if (m_source)
-        m_source->registerListener(shared_from_this<ChangeListener>());
+        m_source->registerListener(shared_this<ChangeListener>());
 
 	updateSource();
 }

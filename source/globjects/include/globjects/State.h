@@ -21,6 +21,8 @@ class Capability;
 
 class GLOBJECTS_API State : public SharedObject, public AbstractState
 {
+    using Super = SharedObject;
+
 public:
     enum Mode
     {

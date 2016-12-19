@@ -36,6 +36,7 @@ Sync::~Sync()
 
 void Sync::onInitialize()
 {
+    Super::onInitialize();
 }
 
 GLsync Sync::fenceSync(const GLenum condition, const UnusedMask flags)

@@ -28,6 +28,7 @@ UniformBlock::UniformBlock(std::weak_ptr<const Program> program, const LocationI
 
 void UniformBlock::onInitialize()
 {
+    Super::onInitialize();
 }
 
 const LocationIdentity & UniformBlock::identity() const

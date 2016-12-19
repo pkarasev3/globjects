@@ -111,21 +111,21 @@ void Framebuffer::attachTexture(const GLenum attachment, std::shared_ptr<Texture
 {
     implementation().attachTexture(this, attachment, texture.get(), level);
 
-    addAttachment(std::unique_ptr<FramebufferAttachment>(new AttachedTexture(shared_from_this<Framebuffer>(), attachment, texture, level)));
+    addAttachment(std::unique_ptr<FramebufferAttachment>(new AttachedTexture(shared_this<Framebuffer>(), attachment, texture, level)));
 }
 
 void Framebuffer::attachTextureLayer(const GLenum attachment, std::shared_ptr<Texture> texture, const GLint level, const GLint layer)
 {
     implementation().attachTextureLayer(this, attachment, texture.get(), level, layer);
 
-    addAttachment(std::unique_ptr<FramebufferAttachment>(new AttachedTexture(shared_from_this<Framebuffer>(), attachment, texture, level, layer)));
+    addAttachment(std::unique_ptr<FramebufferAttachment>(new AttachedTexture(shared_this<Framebuffer>(), attachment, texture, level, layer)));
 }
 
 void Framebuffer::attachRenderBuffer(const GLenum attachment, std::shared_ptr<Renderbuffer> renderBuffer)
 {
     implementation().attachRenderBuffer(this, attachment, renderBuffer.get());
 
-    addAttachment(std::unique_ptr<FramebufferAttachment>(new AttachedRenderbuffer(shared_from_this<Framebuffer>(), attachment, renderBuffer)));
+    addAttachment(std::unique_ptr<FramebufferAttachment>(new AttachedRenderbuffer(shared_this<Framebuffer>(), attachment, renderBuffer)));
 }
 
 bool Framebuffer::detach(const GLenum attachment)

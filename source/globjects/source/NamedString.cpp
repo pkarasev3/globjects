@@ -56,7 +56,7 @@ NamedString::NamedString(const std::string & name, std::shared_ptr<AbstractStrin
 
 NamedString::~NamedString()
 {
-    m_source->deregisterListener(shared_from_this<AbstractChangeListener>());
+    m_source->deregisterListener(shared_this<AbstractChangeListener>());
 
     deregisterNamedString();
     deleteNamedString();
@@ -64,10 +64,12 @@ NamedString::~NamedString()
 
 void NamedString::onInitialize()
 {
+    Super::onInitialize();
+
     createNamedString();
     registerNamedString();
 
-    m_source->registerListener(shared_from_this<AbstractChangeListener>());
+    m_source->registerListener(shared_this<AbstractChangeListener>());
 }
 
 void NamedString::createNamedString()
@@ -90,12 +92,12 @@ void NamedString::deleteNamedString()
 
 void NamedString::registerNamedString()
 {
-    NamedStringRegistry::current().registerNamedString(shared_from_this<NamedString>());
+    NamedStringRegistry::current().registerNamedString(shared_this<NamedString>());
 }
 
 void NamedString::deregisterNamedString()
 {
-    NamedStringRegistry::current().deregisterNamedString(shared_from_this<NamedString>());
+    NamedStringRegistry::current().deregisterNamedString(shared_this<NamedString>());
 }
 
 bool NamedString::isNamedString(const std::string & name)

@@ -25,7 +25,7 @@ ChangeListener<Superclass>::~ChangeListener()
         // calls removeSubject
         if (ptr)
         {
-            ptr->deregisterListener(this->template shared_from_this<AbstractChangeListener>());
+            ptr->deregisterListener(shared_this<AbstractChangeListener>());
         }
     }
 }

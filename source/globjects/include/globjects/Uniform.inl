@@ -40,6 +40,7 @@ Uniform<T>::~Uniform()
 template <typename T>
 void Uniform<T>::onInitialize()
 {
+    Super::onInitialize();
 }
 
 template<typename T>

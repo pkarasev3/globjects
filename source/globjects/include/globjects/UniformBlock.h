@@ -18,6 +18,7 @@ class Program;
 class GLOBJECTS_API UniformBlock : public SharedObject
 {
     friend class Program;
+    using Super = SharedObject;
 public:
     UniformBlock();
     UniformBlock(std::weak_ptr<const Program> program, const LocationIdentity & m_identity);

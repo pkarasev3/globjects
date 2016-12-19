@@ -24,15 +24,15 @@ namespace globjects
 
 
 template <typename T>
-std::shared_ptr<T> SharedObject::shared_from_this()
+std::shared_ptr<T> AbstractSharedObject::shared_this()
 {
-    return reinterpret_pointer_cast<T>(std::enable_shared_from_this<SharedObject>::shared_from_this());
+    return std::dynamic_pointer_cast<T>(shared_from_this());
 }
 
 template <typename T>
-std::shared_ptr<const T> SharedObject::shared_from_this() const
+std::shared_ptr<const T> AbstractSharedObject::shared_this() const
 {
-    return reinterpret_pointer_cast<const T>(std::enable_shared_from_this<SharedObject>::shared_from_this());
+    return std::dynamic_pointer_cast<const T>(shared_from_this());
 }
 
 

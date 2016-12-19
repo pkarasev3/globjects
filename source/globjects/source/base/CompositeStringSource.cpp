@@ -24,15 +24,17 @@ CompositeStringSource::~CompositeStringSource()
 {
     for (const auto & source : m_sources)
     {
-        source->deregisterListener(ChangeListener::shared_from_this<ChangeListener>());
+        source->deregisterListener(ChangeListener::shared_this<ChangeListener>());
     }
 }
 
 void CompositeStringSource::onInitialize()
 {
+    Super::onInitialize();
+
     for (const auto & source : m_sources)
     {
-        source->registerListener(ChangeListener::shared_from_this<ChangeListener>());
+        source->registerListener(ChangeListener::shared_this<ChangeListener>());
     }
 }
 
@@ -41,7 +43,7 @@ void CompositeStringSource::appendSource(std::shared_ptr<AbstractStringSource> s
     assert(source != nullptr);
 
     m_sources.push_back(source);
-    source->registerListener(ChangeListener::shared_from_this<ChangeListener>());
+    source->registerListener(ChangeListener::shared_this<ChangeListener>());
     changed();
 }
 

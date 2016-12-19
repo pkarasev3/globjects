@@ -15,6 +15,7 @@ namespace globjects
 
 class GLOBJECTS_API StringTemplate : public StringSourceDecorator
 {
+    using Super = StringSourceDecorator;
 public:
     StringTemplate(std::shared_ptr<globjects::AbstractStringSource> source);
     virtual ~StringTemplate();

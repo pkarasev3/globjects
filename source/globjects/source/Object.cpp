@@ -40,6 +40,8 @@ Object::Object(std::unique_ptr<IDResource> && resource)
 
 void Object::onInitialize()
 {
+    Super::onInitialize();
+
     ObjectRegistry::current().registerObject(this);
 }
 

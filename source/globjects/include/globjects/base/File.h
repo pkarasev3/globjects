@@ -19,8 +19,9 @@ namespace globjects
 
     \see StringSource
  */
-class GLOBJECTS_API File : public globjects::AbstractStringSource
+class GLOBJECTS_API File : public AbstractStringSource
 {
+    using Super = AbstractStringSource;
 public:
     File(const std::string & filePath, bool binary = true);
     virtual ~File();

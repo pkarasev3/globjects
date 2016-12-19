@@ -26,6 +26,7 @@ class IDResource;
 class GLOBJECTS_API Object : public SharedObject
 {
     friend class AbstractObjectNameImplementation;
+    using Super = SharedObject;
 
 public:
     enum class NameImplementation

@@ -10,17 +10,17 @@ namespace globjects
 
 
 template<class T>
-std::unique_ptr<T> Singleton<T>::s_instance(nullptr);
+T * Singleton<T>::s_instance = nullptr;
 
 template<class T>
 T * Singleton<T>::instance()
 {
     if (!s_instance)
     {
-        s_instance.reset(new T());
+        s_instance = new T();
     }
 
-    return s_instance.get();
+    return s_instance;
 }
 
 template<class T>
@@ -32,6 +32,7 @@ Singleton<T>::Singleton()
 template<class T>
 Singleton<T>::~Singleton()
 {
+    assert(s_instance);
 }
 
 

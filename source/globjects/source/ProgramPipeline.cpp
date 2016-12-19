@@ -27,7 +27,7 @@ ProgramPipeline::~ProgramPipeline()
     {
         for (auto & program : m_programs)
         {
-            program->deregisterListener(shared_from_this<ChangeListener>());
+            program->deregisterListener(shared_this<ChangeListener>());
         }
     }
     else
@@ -71,7 +71,7 @@ void ProgramPipeline::useStages(std::shared_ptr<Program> program, gl::UseProgram
 {
     program->setParameter(gl::GL_PROGRAM_SEPARABLE, gl::GL_TRUE);
 
-    program->registerListener(shared_from_this<ChangeListener>());
+    program->registerListener(shared_this<ChangeListener>());
     m_programs.emplace(program);
 
     program->link();
@@ -90,7 +90,7 @@ void ProgramPipeline::releaseStages(gl::UseProgramStageMask stages)
 
 void ProgramPipeline::releaseProgram(std::shared_ptr<Program> program)
 {
-    program->deregisterListener(shared_from_this<ChangeListener>());
+    program->deregisterListener(shared_this<ChangeListener>());
     m_programs.erase(program);
 
     invalidate();

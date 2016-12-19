@@ -87,7 +87,7 @@ VertexAttributeBinding * VertexArray::binding(const GLuint bindingIndex)
 
     if (it == m_bindings.end())
     {
-        const auto insertedIt = m_bindings.emplace(bindingIndex, std::unique_ptr<VertexAttributeBinding>(new VertexAttributeBinding(shared_from_this<VertexArray>(), bindingIndex)));
+        const auto insertedIt = m_bindings.emplace(bindingIndex, std::unique_ptr<VertexAttributeBinding>(new VertexAttributeBinding(shared_this<VertexArray>(), bindingIndex)));
 
         return insertedIt.first->second.get();
     }

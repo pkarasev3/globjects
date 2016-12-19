@@ -25,6 +25,7 @@ class AbstractStringSource;
  */
 class GLOBJECTS_API ProgramBinary : public Changeable<ChangeListener<SharedObject>>
 {
+    using Super = Changeable<ChangeListener<SharedObject>>;
 public:
     ProgramBinary(gl::GLenum binaryFormat, const std::vector<char> & binaryData);
     ProgramBinary(gl::GLenum binaryFormat, std::shared_ptr<AbstractStringSource> dataSource);

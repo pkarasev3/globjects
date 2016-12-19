@@ -20,7 +20,7 @@ protected:
     virtual ~Singleton();
 
 protected:
-    static std::unique_ptr<T> s_instance;
+    static T * s_instance;
 };
 
 

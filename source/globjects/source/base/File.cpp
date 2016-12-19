@@ -26,6 +26,8 @@ File::~File()
 
 void File::onInitialize()
 {
+    Super::onInitialize();
+
     FileRegistry::registerFile(this);
 }
 

@@ -19,6 +19,7 @@ class AbstractStringSource;
 
 class GLOBJECTS_API NamedString : public ChangeListener<SharedObject>
 {
+    using Super = ChangeListener<SharedObject>;
 public:
     virtual ~NamedString();
 

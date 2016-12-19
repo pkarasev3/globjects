@@ -27,6 +27,7 @@ State::~State()
 
 void State::onInitialize()
 {
+    Super::onInitialize();
 }
 
 std::shared_ptr<State> State::currentState()
@@ -340,15 +341,20 @@ void State::add(std::unique_ptr<StateSetting> && setting)
     if (it != m_settings.end())
     {
         it->second = std::move(setting);
+
+        if (m_mode == ImmediateMode)
+        {
+            it->second->apply();
+        }
     }
     else
     {
-        m_settings.emplace(type, std::move(setting));
-    }
+        const auto it = m_settings.emplace(type, std::move(setting));
 
-    if (m_mode == ImmediateMode)
-    {
-        setting->apply();
+        if (m_mode == ImmediateMode)
+        {
+            it.first->second->apply();
+        }
     }
 }
 

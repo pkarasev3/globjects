@@ -36,7 +36,7 @@ class AbstractStringSource;
     \see ChangeListener
     \see Changeable
  */
-class GLOBJECTS_API Shader : public Changeable<ChangeListener<Object>>
+class GLOBJECTS_API Shader : public ChangeListener<Changeable<Object>>
 {
     friend class Program;
 
@@ -62,7 +62,6 @@ public:
 
 public:
     Shader(const gl::GLenum type);
-    Shader(const gl::GLenum type, std::shared_ptr<AbstractStringSource> source, const IncludePaths & includePaths = IncludePaths());
     virtual ~Shader();
 
     virtual void accept(ObjectVisitor& visitor) override;

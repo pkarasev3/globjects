@@ -6,6 +6,8 @@
 
 #include <globjects/globjects_api.h>
 
+#include <globjects/base/SharedObject.h>
+
 
 namespace globjects
 {
@@ -14,9 +16,12 @@ namespace globjects
 class AbstractChangeable;
 
 
-class GLOBJECTS_API AbstractChangeListener
+class GLOBJECTS_API AbstractChangeListener : public SharedObject
 {
 public:
+    AbstractChangeListener();
+    ~AbstractChangeListener();
+
     virtual void notifyChanged(const AbstractChangeable * sender) = 0;
 
     virtual void addSubject(std::weak_ptr<AbstractChangeable> subject) = 0;

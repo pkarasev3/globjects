@@ -8,6 +8,7 @@
 #include <globjects/globjects_api.h>
 
 #include <globjects/base/Changeable.h>
+#include <globjects/base/SharedObject.h>
 
 
 namespace globjects

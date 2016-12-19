@@ -15,6 +15,7 @@ namespace globjects
 
 class GLOBJECTS_API StringSourceDecorator : public ChangeListener<AbstractStringSource>
 {
+    using Super = ChangeListener<AbstractStringSource>;
 public:
     StringSourceDecorator(std::shared_ptr<globjects::AbstractStringSource> source);
 
@@ -26,6 +27,8 @@ protected:
 
 protected:
     std::shared_ptr<globjects::AbstractStringSource> m_internal;
+
+    virtual void onInitialize() override;
 };
 
 

@@ -27,15 +27,17 @@ ProgramBinary::~ProgramBinary()
 {
     if (m_dataSource)
     {
-        m_dataSource->deregisterListener(shared_from_this<ChangeListener>());
+        m_dataSource->deregisterListener(shared_this<ChangeListener>());
     }
 }
 
 void ProgramBinary::onInitialize()
 {
+    Super::onInitialize();
+
     if (m_dataSource)
     {
-        m_dataSource->registerListener(shared_from_this<ChangeListener>());
+        m_dataSource->registerListener(shared_this<ChangeListener>());
     }
 }
 

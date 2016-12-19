@@ -39,7 +39,7 @@ void Changeable<Superclass>::registerListener(std::weak_ptr<AbstractChangeListen
     if (ptr)
     {
         m_listeners.insert(listener);
-        ptr->addSubject(this->template shared_from_this<AbstractChangeable>());
+        ptr->addSubject(shared_this<AbstractChangeable>());
     }
 }
 
@@ -55,7 +55,7 @@ void Changeable<Superclass>::deregisterListener(std::weak_ptr<AbstractChangeList
 
     if (ptr)
     {
-        ptr->removeSubject(this->template shared_from_this<AbstractChangeable>());
+        ptr->removeSubject(shared_this<AbstractChangeable>());
     }
 }
 

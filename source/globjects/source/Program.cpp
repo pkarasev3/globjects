@@ -58,21 +58,28 @@ Program::Program()
 Program::Program(std::shared_ptr<ProgramBinary> binary)
 : Program()
 {
-    setBinary(binary);
+}
+
+void Program::onInitialize()
+{
+    Super::onInitialize();
+
+    if (m_binary)
+        m_binary->registerListener(shared_this<ChangeListener>());
 }
 
 Program::~Program()
 {
     for (const auto & uniformPair : m_uniforms)
     {
-        uniformPair.second->deregisterProgram(shared_from_this<Program>());
+        uniformPair.second->deregisterProgram(shared_this<Program>());
     }
 
     if (id() == 0)
     {
         for (const auto & shader : m_shaders)
         {
-            shader->deregisterListener(shared_from_this<Program>());
+            shader->deregisterListener(shared_this<Program>());
         }
     }
     else
@@ -136,7 +143,7 @@ void Program::attach(std::shared_ptr<Shader> shader)
 {
     gl::glAttachShader(id(), shader->id());
 
-    shader->registerListener(shared_from_this<ChangeListener>());
+    shader->registerListener(shared_this<ChangeListener>());
     m_shaders.insert(shader);
 
     invalidate();
@@ -146,7 +153,7 @@ void Program::detach(std::shared_ptr<Shader> shader)
 {
     glDetachShader(id(), shader->id());
 
-    shader->deregisterListener(shared_from_this<ChangeListener>());
+    shader->deregisterListener(shared_this<ChangeListener>());
 	m_shaders.erase(shader);
 
 	invalidate();
@@ -422,7 +429,7 @@ UniformBlock * Program::getUniformBlockByIdentity(const LocationIdentity & ident
 
     if (it == m_uniformBlocks.end())
     {
-        auto insertedIt = m_uniformBlocks.emplace(identity, create_shared<UniformBlock>(shared_from_this<Program>(), identity));
+        auto insertedIt = m_uniformBlocks.emplace(identity, create_shared<UniformBlock>(shared_this<Program>(), identity));
 
         return insertedIt.first->second.get();
     }
@@ -438,16 +445,16 @@ void Program::addUniform(std::shared_ptr<AbstractUniform> uniform)
 
 	if (uniformReference)
     {
-        uniformReference->deregisterProgram(shared_from_this<Program>());
+        uniformReference->deregisterProgram(shared_this<Program>());
     }
 
 	uniformReference = uniform;
 
-    uniform->registerProgram(shared_from_this<Program>());
+    uniform->registerProgram(shared_this<Program>());
 
 	if (m_linked)
     {
-        uniform->update(shared_from_this<Program>(), true);
+        uniform->update(shared_this<Program>(), true);
     }
 }
 
@@ -456,7 +463,7 @@ void Program::updateUniforms() const
 	// Note: uniform update will check if program is linked
     for (const auto & uniformPair : m_uniforms)
     {
-        uniformPair.second->update(shared_from_this<Program>(), true);
+        uniformPair.second->update(shared_this<Program>(), true);
     }
 }
 
@@ -472,12 +479,12 @@ void Program::setBinary(std::shared_ptr<ProgramBinary> binary)
         return;
 
     if (m_binary)
-        m_binary->deregisterListener(shared_from_this<ChangeListener>());
+        m_binary->deregisterListener(shared_this<ChangeListener>());
 
     m_binary = binary;
 
     if (m_binary)
-        m_binary->registerListener(shared_from_this<ChangeListener>());
+        m_binary->registerListener(shared_this<ChangeListener>());
 }
 
 ProgramBinary * Program::getBinary() const

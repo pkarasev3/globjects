@@ -124,6 +124,8 @@ set(sources
 	${source_path}/container_helpers.h
 	${source_path}/container_helpers.inl
 
+	${source_path}/base/AbstractChangeable.cpp
+	${source_path}/base/AbstractChangeListener.cpp
 	${source_path}/base/AbstractFunctionCall.cpp
 	${source_path}/base/AbstractStringSource.cpp
 	${source_path}/base/baselogging.cpp

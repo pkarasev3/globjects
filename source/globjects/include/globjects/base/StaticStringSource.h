@@ -20,6 +20,7 @@ namespace globjects
  */
 class GLOBJECTS_API StaticStringSource : public AbstractStringSource
 {
+    using Super = AbstractStringSource;
 public:
     StaticStringSource(const std::string & string);
     StaticStringSource(const char * data, size_t length);

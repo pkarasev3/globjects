@@ -17,6 +17,7 @@ namespace globjects
 
 class GLOBJECTS_API CompositeStringSource : public ChangeListener<AbstractStringSource>
 {
+    using Super = ChangeListener<AbstractStringSource>;
 public:
     CompositeStringSource();
     CompositeStringSource(const std::vector<std::shared_ptr<AbstractStringSource>> & sources);

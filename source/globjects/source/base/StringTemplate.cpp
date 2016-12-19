@@ -43,6 +43,7 @@ StringTemplate::~StringTemplate()
 
 void StringTemplate::onInitialize()
 {
+    Super::onInitialize();
 }
 
 std::string StringTemplate::string() const

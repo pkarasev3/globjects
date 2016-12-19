@@ -35,6 +35,7 @@ namespace globjects
 template<typename T>
 class Uniform : public AbstractUniform
 {
+    using Super = AbstractUniform;
 public:
     Uniform(gl::GLint location);
     Uniform(gl::GLint location, const T & value);

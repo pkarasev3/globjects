@@ -65,10 +65,14 @@ ScreenAlignedQuad::ScreenAlignedQuad(
     auto vertexShaderSource   = create_shared<StringTemplate>(create_shared<StaticStringSource>(s_defaultVertexShaderSource));
     auto fragmentShaderSource = create_shared<StringTemplate>(create_shared<StaticStringSource>(s_defaultFragmentShaderSource));
     
-    m_vertexShader   = create_shared<Shader>(GL_VERTEX_SHADER, vertexShaderSource);
+    m_vertexShader   = create_shared<Shader>(GL_VERTEX_SHADER);
+    m_vertexShader->setSource(vertexShaderSource);
     
     if (!m_fragmentShader)
-        m_fragmentShader = create_shared<Shader>(GL_FRAGMENT_SHADER, fragmentShaderSource);
+    {
+        m_fragmentShader = create_shared<Shader>(GL_FRAGMENT_SHADER);
+        m_fragmentShader->setSource(fragmentShaderSource);
+    }
 
     m_program->attach(m_vertexShader, m_fragmentShader);
 

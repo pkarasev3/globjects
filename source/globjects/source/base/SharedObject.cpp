@@ -14,9 +14,21 @@ SharedObject::~SharedObject()
 {
 }
 
-void SharedObject::initialize()
+AbstractSharedObject::AbstractSharedObject()
+{
+}
+
+AbstractSharedObject::~AbstractSharedObject()
+{
+}
+
+void AbstractSharedObject::initialize()
 {
     onInitialize();
+}
+
+void AbstractSharedObject::onInitialize()
+{
 }
 
 

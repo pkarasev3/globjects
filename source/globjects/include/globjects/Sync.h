@@ -15,6 +15,7 @@ namespace globjects
 
 class GLOBJECTS_API Sync : public SharedObject
 {
+    using Super = SharedObject;
     friend class AbstractObjectNameImplementation;
 
 public:
