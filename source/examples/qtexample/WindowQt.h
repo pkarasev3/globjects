@@ -42,8 +42,7 @@ protected:
     void resize(QResizeEvent * event);
     void paint();
 
-    virtual void initializeGL();
-    virtual void deinitializeGL();
+    virtual void initializeGL();    
     virtual void resizeGL(QResizeEvent * event);
     virtual void paintGL();
 };

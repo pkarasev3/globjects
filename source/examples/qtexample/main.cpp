@@ -46,6 +46,14 @@ public:
 
     virtual ~Window()
     {
+        if (m_initialized)
+        {
+            makeCurrent();
+
+            deinitializeGL();
+
+            doneCurrent();
+        }
     }
 
     virtual void initializeGL() override
@@ -91,17 +99,18 @@ public:
         m_vao->enable(0);
     }
 
-    virtual void deinitializeGL() override
+    void deinitializeGL()
     {
         m_cornerBuffer.reset(nullptr);
         m_program.reset(nullptr);
+        m_vertexShader.reset(nullptr);        
         m_vertexShaderSource.reset(nullptr);
         m_vertexShaderTemplate.reset(nullptr);
-        m_vertexShader.reset(nullptr);
-        m_fragmentShaderSource.reset(nullptr);
-        m_fragmentShaderTemplate.reset(nullptr);
         m_fragmentShader.reset(nullptr);
+        m_fragmentShaderSource.reset(nullptr);
+        m_fragmentShaderTemplate.reset(nullptr);        
         m_vao.reset(nullptr);
+        m_initialized = false;
     }
 
     virtual void resizeGL(QResizeEvent * event) override

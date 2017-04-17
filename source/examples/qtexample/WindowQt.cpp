@@ -46,14 +46,6 @@ WindowQt::WindowQt(const QSurfaceFormat & format)
 
 WindowQt::~WindowQt()
 {
-    if (m_initialized)
-    {
-        makeCurrent();
-
-        deinitializeGL();
-
-        doneCurrent();
-    }
 }
 
 QOpenGLContext * WindowQt::context()
@@ -157,10 +149,6 @@ bool WindowQt::event(QEvent * event)
 }
 
 void WindowQt::initializeGL()
-{
-}
-
-void WindowQt::deinitializeGL()
 {
 }
 
