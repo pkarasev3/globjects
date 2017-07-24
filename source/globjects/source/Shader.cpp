@@ -86,14 +86,9 @@ std::unique_ptr<AbstractStringSource> Shader::applyGlobalReplacements(AbstractSt
 
 Shader::~Shader()
 {
-    for (auto listener : m_listeners)
+    while (!m_programs.empty())
     {
-        auto program = dynamic_cast<Program *>(listener);
-
-        if (program)
-        {
-            program->detach(this);
-        }
+        (*m_programs.begin())->detach(this);
     }
 }
 

@@ -63,11 +63,6 @@ Program::Program(std::unique_ptr<ProgramBinary> && binary)
 
 Program::~Program()
 {
-    for (const auto & uniformPair : m_uniforms)
-    {
-        uniformPair.second->deregisterProgram(this);
-    }
-
     if (id() != 0)
     {
         while (!m_shaders.empty())
@@ -133,6 +128,7 @@ void Program::attach(Shader * shader)
 
     shader->registerListener(this);
     m_shaders.insert(shader);
+    shader->m_programs.insert(this);
 
     invalidate();
 }
@@ -145,16 +141,14 @@ void Program::detach(Shader * shader)
 
     shader->deregisterListener(this);
     m_shaders.erase(shader);
+    shader->m_programs.erase(this);
 
     invalidate();
 }
 
-std::set<Shader *> Program::shaders() const
+const std::set<Shader *> & Program::shaders() const
 {
-    std::set<Shader *> shaders;
-    for (auto shader: m_shaders)
-        shaders.insert(shader);
-    return shaders;
+    return m_shaders;
 }
 
 void Program::link() const
@@ -180,7 +174,7 @@ void Program::link() const
 
 bool Program::compileAttachedShaders() const
 {
-    for (Shader * shader : shaders())
+    for (Shader * shader : m_shaders)
     {
         if (shader->isCompiled())
             continue;
@@ -425,24 +419,15 @@ UniformBlock * Program::getUniformBlockByIdentity(const LocationIdentity & ident
     return &it->second;
 }
 
-void Program::addUniform(AbstractUniform * uniform)
+void Program::addUniform(std::unique_ptr<AbstractUniform> && uniform)
 {
     assert(uniform != nullptr);
 
-    auto uniformReference = m_uniforms[uniform->identity()];
-
-    if (uniformReference)
-    {
-        uniformReference->deregisterProgram(this);
-    }
-
-    uniformReference = uniform;
-
-    uniform->registerProgram(this);
+    m_uniforms[uniform->identity()] = std::move(uniform);
 
     if (m_linked)
     {
-        uniform->update(this, true);
+        uniform->update(true);
     }
 }
 
@@ -451,7 +436,7 @@ void Program::updateUniforms() const
     // Note: uniform update will check if program is linked
     for (const auto & uniformPair : m_uniforms)
     {
-        uniformPair.second->update(this, true);
+        uniformPair.second->update(true);
     }
 }
 
